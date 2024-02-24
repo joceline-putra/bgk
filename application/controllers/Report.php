@@ -1642,6 +1642,13 @@ class Report extends MY_Controller{
             $this->load->view('layouts/admin/menu/prints/reports/report_sales_return_detail',$data);
         }
         function report_point_of_sales_recap($date_start,$date_end,$contact){
+            $date_start = str_replace("%20"," ",$date_start.":00");
+            $date_end = str_replace("%20"," ",$date_end."");
+
+            $set_date_start = date("Y-m-d H:i:s", strtotime($date_start));
+            $set_date_end = date("Y-m-d H:i:s", strtotime($date_end));            
+            // var_dump($set_date_start,$set_date_end);die;            
+
             $session = $this->session->userdata(); 
             $session_branch_id = $session['user_data']['branch']['id'];
             $session_user_id = $session['user_data']['user_id'];
@@ -1666,8 +1673,8 @@ class Report extends MY_Controller{
             $params_datatable = array(
                 'order_branch_id' => $session_branch_id,
                 'order_type' => 222,
-                'order_date >' => date("Y-m-d", strtotime($date_start)).' 00:00:00',
-                'order_date <' => date("Y-m-d", strtotime($date_end)).' 23:59:59'
+                'order_date >' => $set_date_start,
+                'order_date <' => $set_date_end
             );
 
             if(intval($contact) > 0){
@@ -1709,7 +1716,7 @@ class Report extends MY_Controller{
                 );
             }
             // echo json_encode($mdatas);die;
-            $data['periode'] = date("d-M-Y, H:i", strtotime($date_start.' 00:00:00')).' sd '.date("d-M-Y, H:i", strtotime($date_end.' 23:59:59')); 
+            $data['periode'] = date("d-M-Y, H:i", strtotime($set_date_start)).' sd '.date("d-M-Y, H:i", strtotime($set_date_end)); 
             $data['content'] = $mdatas;
             $data['title']          = "Laporan ".$this->pos_alias." Rekap";
             $data['contact_alias']  = $this->customer_alias;
@@ -1718,6 +1725,12 @@ class Report extends MY_Controller{
             $this->load->view('layouts/admin/menu/prints/reports/report_pos_recap',$data);
         }
         function report_point_of_sales_detail($date_start,$date_end,$contact){
+            $date_start = str_replace("%20"," ",$date_start.":00");
+            $date_end = str_replace("%20"," ",$date_end."");
+
+            $set_date_start = date("Y-m-d H:i:s", strtotime($date_start));
+            $set_date_end = date("Y-m-d H:i:s", strtotime($date_end));            
+            // var_dump($set_date_start,$set_date_end);die;            
             $session = $this->session->userdata(); 
             $session_branch_id = $session['user_data']['branch']['id'];
             $session_user_id = $session['user_data']['user_id'];
@@ -1743,8 +1756,8 @@ class Report extends MY_Controller{
             $params_datatable = array(
                 'order_branch_id' => $session_branch_id,
                 'order_type' => 222,
-                'order_date >' => date("Y-m-d", strtotime($date_start)).' 00:00:00',
-                'order_date <' => date("Y-m-d", strtotime($date_end)).' 23:59:59'
+                'order_date >' => $set_date_start,
+                'order_date <' => $set_date_end
             );
             if(intval($contact) > 0){
                 $params_datatable['contact_id'] = intval($contact);
@@ -1761,7 +1774,7 @@ class Report extends MY_Controller{
             $mdatas = array();
             $mdatas = $this->Order_model->get_all_order_items_report($params_datatable, $search, $limit, $start, $order, $dir);
             // echo json_encode($mdatas);die;
-            $data['periode'] = date("d-M-Y, H:i", strtotime($date_start.' 00:00:00')).' sd '.date("d-M-Y, H:i", strtotime($date_end.' 23:59:59')); 
+            $data['periode'] = date("d-M-Y, H:i", strtotime($set_date_start)).' sd '.date("d-M-Y, H:i", strtotime($set_date_end)); 
             $data['content'] = $mdatas;
             $data['title']              = "Laporan ".$this->pos_alias." Rinci";
             $data['contact_alias']      = $this->customer_alias;

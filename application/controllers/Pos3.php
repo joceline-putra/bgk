@@ -29,7 +29,7 @@ class Pos3 extends MY_Controller{
         $this->load->model('Account_map_model'); 
         $this->load->model('Referensi_model');         
 
-        $this->print_to         = 1; //0 = Local, 1 = Bluetooth
+        $this->print_to         = 0; //0 = Local, 1 = Bluetooth
         $this->whatsapp_config  = 1;          
 
         $this->contact_1_alias  = 'Customer';
@@ -44,7 +44,7 @@ class Pos3 extends MY_Controller{
         $this->product_alias    = 'Jasa';     
         
         $this->form_title       = 'POS 3';
-        $this->form_type        = 222;    
+        $this->form_type        = 2;    
 
         $this->file_view        = 'layouts/admin/menu/sales/pos/pos_v3';
         $this->file_js          = 'layouts/admin/menu/sales/pos/pos_v3_js';

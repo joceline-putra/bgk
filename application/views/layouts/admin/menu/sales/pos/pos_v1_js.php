@@ -445,12 +445,13 @@
         // loadProductTabDetail({category_id:1,search:'ayam'});
 
         $('#order_contact_id').select2({
+            dropdownParent:$("#modal-order"),
+            width:'100%',
             placeholder: {
                 id: '0',
                 text: contact_1_alias
             },
             allowClear: true,
-            minimumResultsForSearch: Infinity,
             ajax: {
                 type: "get",
                 url: "<?= base_url('search/manage'); ?>",
@@ -478,13 +479,13 @@
                 if (!d.id) {
                     return d.text;
                 }
-                return '<i class="fas fa-user-check ' + d.id.toLowerCase() + '"></i> ' + d.text;
+                return '<i class="fas fa-user-plus ' + d.id.toLowerCase() + '"></i> ' + d.text;
             },
             templateResult: function (d) {
                 if (!d.id) {
                     return d.text;
                 }
-                return '<i class="fas fa-user-check ' + d.id.toLowerCase() + '"></i> ' + d.text;
+                return '<i class="fas fa-user-plus ' + d.id.toLowerCase() + '"></i> ' + d.text;
             },
         });
         $('#payment_contact_id').select2({
@@ -2520,6 +2521,7 @@
                 var prepare = {
                     tipe: identity,
                     id: id,
+                    order_flag:3
                 };
                 var prepare_data = JSON.stringify(prepare);
                 var data = {
@@ -4073,9 +4075,12 @@
         function loadPaymentItem() { /* load-payment-item */
             console.log('loadPaymentItem()');
             $("#modal-payment-form").modal('hide');
+            var prepare = {
+                order_flag:3
+            };        
             var data = {
                 action: 'bill-load',
-                data: ''
+                data: JSON.stringify(prepare)
             };
             $.ajax({
                 type: "POST",

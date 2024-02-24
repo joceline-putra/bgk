@@ -478,13 +478,13 @@
         /* .btn_product_tab:active, .btn_product_tab:focus,.btn_product_tab:hover{
             color:var(--form-background-color)!important;
         } */
-        /* #tab3 .grid-body{
+        /* #tab4 .grid-body{
             background-color: var(--form-background-color);
         }
-        #tab3 label, #tab3 .dataTables_info, #tab3 .paginate_button, #tab3 th, #tab3 h5 > b{
+        #tab4 label, #tab4 .dataTables_info, #tab4 .paginate_button, #tab4 th, #tab4 h5 > b{
             color: var(--form-font-color);
         }
-        #tab3 th{
+        #tab4 th{
             background-color: var(--form-background-color-2);
         }         */
     /* Table */
@@ -746,30 +746,34 @@
 </style>
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <ul class="nav nav-tabs" role="tablist" style="display:inline;">
+        <ul class="hide nav nav-tabs" role="tablist" style="display:inline;">
             <li class="active">
                 <a href="#tab0" role="tab" class="btn-tab-3" data-toggle="tab" aria-expanded="false"  style="cursor:pointer;">
-                <span class="fas fa-table"></span> <?php echo $ref_alias; ?></a>
+                <span class="fas fa-table"></span> 0.<?php echo $ref_alias; ?></a>
             </li>            
             <li class="">
                 <a href="#tab1" role="tab" class="btn-tab-1" data-toggle="tab" aria-expanded="true">
-                <span class="fas fa-clipboard"></span> Order</a>
+                <span class="fas fa-clipboard"></span> 1.Order</a>
             </li>
             <li class="">
-                <a href="#tab2" role="tab" class="btn-tab-2" data-toggle="tab" aria-expanded="false"  style="cursor:pointer;">
-                <span class="fas fa-clipboard"></span> Payment</a>
-            </li>
+                <a href="#tab2" role="tab" class="btn-tab-2" data-toggle="tab" aria-expanded="true">
+                <span class="fas fa-clipboard"></span> 2.Trans</a>
+            </li>  
             <li class="">
                 <a href="#tab3" role="tab" class="btn-tab-3" data-toggle="tab" aria-expanded="false"  style="cursor:pointer;">
-                <span class="fas fa-shopping-cart"></span> Data Order</a>
-            </li> 
+                <span class="fas fa-clipboard"></span> 3.Payment</a>
+            </li>
             <li class="">
                 <a href="#tab4" role="tab" class="btn-tab-4" data-toggle="tab" aria-expanded="false"  style="cursor:pointer;">
-                <span class="fas fa-cash-register"></span> Data Payment</a>
-            </li>                                                                                       
+                <span class="fas fa-shopping-cart"></span> 4.Data Order</a>
+            </li> 
+            <li class="">
+                <a href="#tab5" role="tab" class="btn-tab-5" data-toggle="tab" aria-expanded="false"  style="cursor:pointer;">
+                <span class="fas fa-cash-register"></span> 5.Data Payment</a>
+            </li>                                                                                                 
         </ul>
         <div class="tab-content" style="border: 8px solid var(--form-background-color);">
-            <div class="tab-pane active" id="tab0"> <!-- Meja Tab -->
+            <div class="tab-pane active" id="tab0"> <!-- Meja -->
                 <div class="row div_mobile">                    
                     <div class="col-md-12 col-xs-12 col-sm-12 padding-remove-side">
                         <div class="col-md-12 col-xs-12 col-sm-12" style="margin-bottom:4px;">
@@ -832,13 +836,13 @@
                                 <div class="pull-left">
                                     <button style="background-color:var(--form-background-color-hover);" class="btn btn_back_order btn-primary" type="button">
                                         <i class="fas fa-arrow-left"></i>
-                                        Ganti <?php echo $ref_alias;?>
+                                        Kembali
                                     </button>
                                 </div>
                             </div>   
                             <div class="col-md-4 col-sm-4 col-xs-4 padding-remove-side">
                                 <div class="col-md-12 col-xs-12 col-sm-12" style="padding-left: 0;padding-right:0;margin-top:0px;">
-                                    <h5 style="text-align:center;margin-top:0px;font-size:13px;"><b style="color:#444444;" id="trans_ref_label"><?php echo $ref_alias;?> Belum Dipilih</b></h5>
+                                    <h5 style="text-align:center;font-size: large;margin-top:6px;"><b style="color:#444444;" id="trans_ref_label"><?php echo $ref_alias;?> Belum Dipilih</b></h5>
                                 </div>
                             </div>                       
                             <div class="col-md-4 col-sm-4 col-xs-4 padding-remove-left">
@@ -865,7 +869,7 @@
                 </div>                   
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 div_trans">
-                        <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12 padding-remove-side prs-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 padding-remove-side prs-0">
                             <div class="grid simple">
                                 <div class="grid-body" style="padding:0px;">
                                     <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 padding-remove-side" style="background-color: var(--form-background-color);">
@@ -920,7 +924,7 @@
                                                                     $pimg = site_url($p['product_image']);    
                                                                 }
                                                             ?>
-                                                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6 btn_save_trans_item product_tab_detail_item" 
+                                                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6 btn_save_trans_item product_tab_detail_item" 
                                                                 data-product-id="<?php echo $p['product_id'];?>" data-product-code="<?php echo $p['product_code'];?>" data-product-name="<?php echo $p['product_name'];?>" data-product-type="<?php echo $p['product_type'];?>" 
                                                                 data-product-qty="1" data-product-unit="<?php echo $p['product_unit'];?>" data-product-price="<?php echo $p['product_price_sell'];?>">
                                                                     <div class="col-md-12 col-sm-12 product-tab-color-template" style="">
@@ -941,7 +945,53 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12 padding-remove-right prs-0">
+                        <div class="col-md-12 col-sm-12 col-xs-12 padding-remove-side prs-0" style="margin-top: 10px;"> 
+                            <button class="btn btn_cart btn-primary" type="button" style="width: 100%;">
+                                <i class="fas fa-shopping-basket"></i>                                 
+                                <?php echo $checkout_alias; ?>
+                            </button>   
+                        </div>
+                    </div>
+                </div>
+            </div>     
+            <div class="tab-pane" id="tab2"> <!-- Checkout -->
+                <div class="row div_mobile">
+                    <div class="col-md-12 col-xs-12 col-sm-12 padding-remove-side">
+                        <div class="col-md-12 col-xs-12 col-sm-12" style="margin-bottom:4px;">
+                            <div class="col-md-4 col-sm-4 col-xs-4 padding-remove-right">
+                                <div class="pull-left">
+                                    <button style="background-color:var(--form-background-color-hover);" class="btn btn_back_cart btn-primary" type="button">
+                                        <i class="fas fa-arrow-left"></i>
+                                        Kembali
+                                    </button>
+                                </div>
+                            </div>   
+                            <div class="col-md-4 col-sm-4 col-xs-4 padding-remove-side">
+                                <div class="col-md-12 col-xs-12 col-sm-12" style="padding-left: 0;padding-right:0;margin-top:0px;">
+                                    <h5 style="text-align:center;font-size: large;margin-top:6px;"><b style="color:#444444;"><?php echo $checkout_alias;?></b></h5>
+                                </div>
+                            </div>                       
+                            <div class="col-md-4 col-sm-4 col-xs-4 padding-remove-left">
+                                <div class="div_btn_cart_return col-md-12 col-sm-12 col-xs-12 padding-remove-side" style="display:none;">
+                                    <div class="pull-right">
+                                        <button style="background-color:var(--form-background-color-hover);" class="btn btn_cart_return btn-primary" type="button">
+                                            <i class="fas fa-arrow-down"></i>
+                                            Daftar Produk         
+                                        </button>
+                                    </div>
+                                </div>    
+                                <div class="div_btn_cart col-md-12 col-sm-12 col-xs-12 padding-remove-side">                            
+                                    <div class="pull-right">
+                                    </div>
+                                </div>                                
+                            </div>                           
+                        </div>
+                    </div>
+                </div>                   
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 div_trans">
+                        <div class="col-md-12"></div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 padding-remove-right prs-0">
                             <div class="grid simple">
                                 <div class="grid-body" style="padding-left:0;padding-right:0;padding-top:0;">
                                     <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 padding-remove-side" style="background-color: var(--form-background-color);">
@@ -959,6 +1009,46 @@
                                                 <div class="col-md-12 col-sm-12 col-xs-12" style="padding-top:8px;padding-bottom:8px;">
                                                     <div class="row">
                                                         <div class="col-md-12 col-sm-12 col-xs-12 padding-remove-side">
+                                                            <div class="col-md-12 col-xs-12 col-sm-12 padding-remove-side prs-5">
+                                                                <div class="col-md-6 col-xs-6 col-sm-12 padding-remove-side prs-5">
+                                                                    <div class="form-group">
+                                                                        <label class="form-label">Merek Kendaraan</label>
+                                                                        <select id="trans_vehicle_brand" name="trans_vehicle_brand" class="form-control">
+                                                                            <option value="0">Tanpa Merek</option>
+                                                                            <option value="Honda">Honda</option>
+                                                                            <option value="Yamaha">Yamaha</option>
+                                                                            <option value="Suzuki">Suzuki</option>
+                                                                            <option value="Kawasaki">Kawasaki</option>
+                                                                            <option value="Custom">Custom</option>
+                                                                            <option value="Lainnya">Lainnya</option>												
+                                                                        </select>
+                                                                    </div>	
+                                                                </div>
+                                                                <div class="col-md-6 col-xs-6 col-sm-12 padding-remove-side prs-5">
+                                                                    <div class="form-group">
+                                                                        <label class="form-label">Tipe Kendaraan</label>
+                                                                        <select id="trans_vehicle_brand_type_name" name="trans_vehicle_brand_type_name" class="form-control">
+                                                                            <option value="0">Tanpa Tipe</option>
+                                                                            <option value="Bebek">Bebek</option>
+                                                                            <option value="Matic">Matic</option>   
+                                                                            <option value="Sport">Sport</option>
+                                                                            <option value="Trail">Trail</option>                                                				
+                                                                        </select>
+                                                                    </div>	
+                                                                </div>    
+                                                                <div class="col-md-7 col-xs-6 col-sm-12 padding-remove-left prs-5">
+                                                                    <div class="form-group">
+                                                                        <label class="form-label">Nomor Plat</label>
+                                                                        <input id="trans_vehicle_plate_number" name="trans_vehicle_plate_number" type="text" value="" class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-5 col-xs-6 col-sm-12 padding-remove-side">
+                                                                    <div class="form-group">
+                                                                        <label class="form-label">Posisi KiloMeter</label>
+                                                                        <input id="trans_vehicle_distance" name="trans_vehicle_distance" type="text" value="" class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                            </div>                                                            
                                                             <div class="col-md-3 col-sm-3 col-xs-12 padding-remove-left prs-0">
                                                                 <div class="col-md-12 col-xs-12 col-sm-12 padding-remove-side">
                                                                     <div class="form-group">
@@ -1112,8 +1202,8 @@
                         </div> 
                         <div class="col-md-12 col-sm-12 col-xs-12 padding-remove-side prs-0" style="margin-top: 10px;"> 
                             <button id="btn_save_trans" class="btn btn-primary" type="button" style="width: 100%;margin-bottom:8px;">
-                                <i class="fas fa-cash-register"></i>
-                                Bayar
+                                <i class="fas fa-check-double"></i>
+                                Konfirmasi
                             </button> 
                             <button id="btn_reset_trans" class="btn btn-danger" type="reset" style="width: 100%;">
                                 <i class="fas fa-ban"></i>
@@ -1122,8 +1212,8 @@
                         </div>                         
                     </div>
                 </div>
-            </div>
-            <div class="tab-pane" id="tab2"> <!-- Penjualan -->
+            </div> 
+            <div class="tab-pane" id="tab3"> <!-- Bayar -->
                 <div class="row div_mobile">
                     <div class="col-md-12 col-xs-12 col-sm-12 padding-remove-side">
                         <div class="col-md-12 col-xs-12 col-sm-12" style="margin-bottom:4px;">                        
@@ -1137,7 +1227,7 @@
                             </div>
                             <div class="col-md-4 col-sm-4 col-xs-4 padding-remove-side">
                                 <div class="col-md-12 col-xs-12 col-sm-12" style="padding-left: 0;padding-right:0;margin-top:0px;">
-                                    <h5 style="text-align:center;margin-top:0px;font-size:13px;"><b style="color:#444444;">Form <br>Pembayaran</b></h5>
+                                    <h5 style="text-align:center;margin-top:6px;font-size:large;"><b style="color:#444444;">Pembayaran</b></h5>
                                 </div>
                             </div>
                             <div class="col-md-4 col-sm-4 col-xs-4 padding-remove-right">
@@ -1565,7 +1655,7 @@
                     </div>
                 </div>        
             </div>
-            <div class="tab-pane" id="tab3"> <!-- Riwayat Order -->
+            <div class="tab-pane" id="tab4"> <!-- Riwayat Order -->
                 <div class="row div_mobile">
                     <div class="col-md-12 col-xs-12 col-sm-12 padding-remove-side">
                         <div class="col-md-12 col-xs-12 col-sm-12" style="margin-bottom:4px;">
@@ -1579,7 +1669,7 @@
                             </div> 
                             <div class="col-md-4 col-sm-4 col-xs-4 padding-remove-side">
                                 <div class="col-md-12 col-xs-12 col-sm-12" style="padding-left: 0;padding-right:0;margin-top:0px;">
-                                    <h5 style="text-align:center;margin-top:0px;font-size:13px;"><b style="color:#444444;">Riwayat<br><?php echo $order_alias; ?></b></h5>
+                                    <h5 style="text-align:center;margin-top:0px;font-size:medium;"><b style="color:#444444;">Riwayat<br><?php echo $order_alias; ?></b></h5>
                                 </div>
                             </div>
                             <div class="col-md-4 col-sm-4 col-xs-4 padding-remove-right">
@@ -1670,7 +1760,7 @@
                     </div>
                 </div>        
             </div>     
-            <div class="tab-pane" id="tab4"> <!-- Riwayat Trans -->
+            <div class="tab-pane" id="tab5"> <!-- Riwayat Trans -->
                 <div class="row div_mobile">
                     <div class="col-md-12 col-xs-12 col-sm-12 padding-remove-side">
                         <div class="col-md-12 col-xs-12 col-sm-12" style="margin-bottom:4px;">
@@ -1684,7 +1774,7 @@
                             </div> 
                             <div class="col-md-4 col-sm-4 col-xs-4 padding-remove-side">
                                 <div class="col-md-12 col-xs-12 col-sm-12" style="padding-left: 0;padding-right:0;margin-top:0px;">
-                                    <h5 style="text-align:center;margin-top:0px;font-size:13px;"><b style="color:#444444;">Riwayat<br><?php echo $trans_alias; ?></b></h5>
+                                    <h5 style="text-align:center;margin-top:0px;font-size:medium;"><b style="color:#444444;">Riwayat<br><?php echo $trans_alias; ?></b></h5>
                                 </div>
                             </div>
                             <div class="col-md-4 col-sm-4 col-xs-4 padding-remove-right">
@@ -1694,10 +1784,12 @@
                                             <i class="fas fa-print"></i>&nbsp;&nbsp;Cetak&nbsp;&nbsp;<span class="fa fa-angle-down"></span> 
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <li><a href="#" class="btn_print_all_payment" data-request="report_sales_sell_recap" data-format="html">A4 Rekap</a></li>
-                                            <!-- <li><a href="#" class="btn_print_all_payment" data-request="trans_detail" data-format="html">A4 Rinci</a></li> -->
-                                            <!-- <li><a href="#" class="btn_print_all_payment" data-request="trans_recap" data-format="receipt">Struk Rekap</a></li> -->
-                                            <li><a href="#" class="btn_print_all_payment" data-request="report_sales_sell_detail" data-format="receipt">Struk Rinci</a></li>                                            
+                                            <!-- <li><a href="#" class="btn_print_all_payment" data-request="report_sales_sell_recap" data-format="html">A4 Rekap</a></li> -->
+                                            <li><a href="#" class="btn_print_all_payment" data-request="trans_recap" data-format="html">A4 Rekap</a></li>
+                                            <!-- <li><a href="#" class="btn_print_all_payment" data-request="trans_detail" data-format="html">A4 Rinci</a></li>                                             -->
+                                            <!-- <li><a href="#" class="btn_print_all_payment" data-request="trans_recap" data-format="receipt">Struk Rekap</a></li>                                       -->
+                                            <li><a href="#" class="btn_print_all_payment" data-request="trans_detail" data-format="receipt">Struk Rinci</a></li>
+                                            <!-- <li><a href="#" class="btn_print_all_payment" data-request="report_sales_sell_detail" data-format="receipt">Struk Rinci</a></li>                                             -->
                                         </ul>
                                     </div>                                    
                                 </div>
@@ -1774,7 +1866,7 @@
                         </div>
                     </div>
                 </div>             
-            </div>       
+            </div>             
         </div>
     </div>
 </div>
@@ -1801,15 +1893,15 @@
                         </div>
                         <div class="col-md-9 col-xs-12"> 
                             <div class="col-md-6 col-sm-12 col-xs-12">              
-                                <div class="col-lg-5 col-md-5 col-xs-12 padding-remove-side">
+                                <!-- <div class="col-lg-5 col-md-5 col-xs-12 padding-remove-side">
                                     <div class="form-group">
                                         <label class="form-label">Kode</label>
                                         <input id="kode_contact" name="kode_contact" type="text" value="" class="form-control"/>
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="col-lg-12 col-md-12 col-xs-12 padding-remove-side">
                                     <div class="form-group">
-                                        <label class="form-label">Nama <?php echo $contact_1_alias; ?> *</label>
+                                        <label class="form-label">Plat Nomor *</label>
                                         <input id="nama_contact" name="nama_contact" type="text" value="" class="form-control"/>
                                     </div>
                                 </div>                      
@@ -1822,6 +1914,7 @@
                                 </div>                                                          
                             </div>
                             <div class="col-md-6 col-sm-12 col-xs-12">
+                                <!--
                                 <div class="col-lg-12 col-md-12 col-xs-12 padding-remove-side">
                                     <div class="form-group">
                                         <label class="form-label">Alamat</label>
@@ -1834,7 +1927,6 @@
                                         <input id="email_1_contact" name="email_1_contact" type="text" value="" class="form-control"/>
                                     </div>                          
                                 </div>    
-                                <!--
                                     <div class="col-lg-12 col-md-12 col-xs-12 padding-remove-side">
                                         <div class="form-group">
                                             <label>Perusahaan</label>

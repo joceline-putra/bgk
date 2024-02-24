@@ -302,7 +302,6 @@
             }                             
             loadTransItems(transItemsList);
         }   
-        
         //Datatable Trans Config        
         let trans_table = $("#table_trans").DataTable({
             "serverSide": true,

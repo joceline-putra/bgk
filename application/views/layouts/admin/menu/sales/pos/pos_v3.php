@@ -752,7 +752,7 @@
                 <a href="#tab3" role="tab" class="btn-tab-3" data-toggle="tab" aria-expanded="true">
                 <span class="fas fa-plus-square"></span> <?php echo $trans_alias; ?></a>
             </li>  
-            <li class="">
+            <li class="hide">
                 <a href="#tab4" role="tab" class="btn-tab-4" data-toggle="tab" aria-expanded="true">
                 <span class="fas fa-plus-square"></span> <?php echo $journal_alias; ?></a>
             </li>                                                                                                         

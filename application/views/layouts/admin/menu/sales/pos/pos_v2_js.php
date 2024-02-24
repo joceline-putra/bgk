@@ -4,6 +4,7 @@
 
 <script>
     var identity            = "<?php echo $identity; ?>";
+    var order_type            = "<?php echo $order_type; ?>";    
     var url                 = "<?= base_url('pos2'); ?>";
     var url_print           = "<?= base_url('pos2/prints'); ?>";
     var url_print_all       = "<?= base_url('pos2/report'); ?>";
@@ -20,7 +21,8 @@
     let contact_2_alias     = "<?php echo $contact_2_alias; ?>";
     let ref_alias           = "<?php echo $ref_alias; ?>";     
     let order_alias         = "<?php echo $order_alias; ?>";
-    let trans_alias         = "<?php echo $trans_alias; ?>";    
+    let trans_alias         = "<?php echo $trans_alias; ?>";  
+    let checkout_alias         = "<?php echo $checkout_alias; ?>";        
     let payment_alias       = "<?php echo $payment_alias; ?>";
     let dp_alias            = "<?php echo $dp_alias; ?>";
     var whatsapp_config     = "<?php echo $whatsapp_config; ?>";
@@ -195,6 +197,7 @@
         new AutoNumeric('#payment_total', autoNumericOption);
         new AutoNumeric('#payment_received', autoNumericOption);
         new AutoNumeric('#payment_change', autoNumericOption);     
+        new AutoNumeric('#trans_vehicle_distance', autoNumericOption); 
 
 		// Barcode scenner
         if(barcodeMode > 0){
@@ -320,7 +323,7 @@
                 cache: 'false',
                 data: function (d) {
                     d.action = 'load_order';
-                    d.tipe = identity;
+                    d.tipe = order_type;
                     // d.date_start = $("#start").val();
                     // d.date_end = $("#end").val();
                     d.date_start = $("#filter_order_date").attr('data-start');
@@ -412,7 +415,9 @@
                     'data': 'order_flag', className: 'text-left',
                     render: function (data, meta, row) {
                         var dsp = '';
-                        if (parseInt(row.order_flag) == 1) {
+                        if (parseInt(row.order_flag) == 0) {
+                            dsp += '&nbsp;<label class="label label-default">Proses</label>';
+                        }else if (parseInt(row.order_flag) == 1) {
                             dsp += '&nbsp;<label class="label label-success">Lunas</label>';
                         }else if (parseInt(row.order_flag) == 4) {
                             dsp += '&nbsp;<label class="label label-danger">Batal</label>';
@@ -428,7 +433,8 @@
                         dsp += '<span class="fas fa-print"></span>';
                         dsp += '</button>';
                         
-                        if((row.order_trans_id !== undefined) || (row.order_trans_id == null)){
+                        // if((row.order_trans_id !== undefined) || (row.order_trans_id == null)){
+                        if(parseInt(row.order_trans_id) > 0){                            
                             dsp += '&nbsp;<button class="btn_print_payment btn btn-mini btn-success" data-id="' + row.order_trans_id + '" data-session="">';
                             dsp += '<span class="fas fa-print"></span>';
                             dsp += '</button>';
@@ -792,36 +798,16 @@
         });
         
         // Navigation
-        $(document).on("click",".btn_show_trans",function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            activeTab("tab3");
-        });
-        $(document).on("click",".btn_back_trans",function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            activeTab("tab1");
-        });    
-        $(document).on("click",".btn_back_order",function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            activeTab("tab0");
-        });                
-        $(document).on("click",".btn_show_order",function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            activeTab("tab1");
-        });
         $(document).on("click",".btn_menu_toggle", function (e) {
             var i = $(this).attr('data-id');
             if(i == 1){
-                activeTab('tab2');  
+                activeTab('tab3');  
             }else if(i == 2){
-                activeTab('tab3');  
-            }else if(i == 3){
-                activeTab('tab3');  
-            }else if(i == 4){
                 activeTab('tab4');  
+            }else if(i == 3){
+                activeTab('tab4');  
+            }else if(i == 4){
+                activeTab('tab5');  
             }
             // else if(i == 3){
             //     loadPaymentItem();
@@ -830,21 +816,48 @@
             //     $.redirect(url_redirect,[],"POST","_self"); 
             // }           
         }); 
+        $(document).on("click",".btn_show_trans",function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            activeTab("tab4");
+        });
+        $(document).on("click",".btn_back_trans",function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            activeTab("tab2");
+        });    
+        $(document).on("click",".btn_back_order",function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            activeTab("tab0");
+        });
+        $(document).on("click",".btn_back_cart",function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            activeTab("tab1");
+        });                        
+        $(document).on("click",".btn_show_order",function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            activeTab("tab1");
+        });
         $(document).on("click",".btn_cart",function(e) {
             e.preventDefault();
             e.stopPropagation();
-            $(".div_btn_cart").hide();
-            $(".div_btn_cart_return").show();
-            $("#product-search").hide(300);
-            $("#product-tab").hide(300);
-        });
+            if(transItemsList.length > 0){
+                activeTab("tab2");
+            }else{
+                notif(0,'Minimal 1 produk di pilih');
+            }
+        });         
         $(document).on("click",".btn_cart_return",function(e) {
             e.preventDefault();
             e.stopPropagation();
-            $(".div_btn_cart_return").hide(); 
-            $(".div_btn_cart").show();
-            $("#product-search").show(300);
-            $("#product-tab").show(300);
+            // $(".div_btn_cart_return").hide(); 
+            // $(".div_btn_cart").show();
+            // $("#product-search").show(300);
+            // $("#product-tab").show(300);
+            activeTab('tab1');            
         });
 
         // Trans
@@ -904,14 +917,14 @@
                     'trans_total_price':transItemTotal,
                     'trans_total_product':transProductCount,
                     'room_id':$("#trans_ref_id").find(':selected').val(),
-                    'sales_id':$("#trans_sales_id").find(':selected').val()
+                    'sales_id':$("#trans_sales_id").find(':selected').val()                             
                 }
                 trans = trans_data;
                 loadTrans(trans);
                 loadTransItems(transItemsList);
                 checkBoxPaymentNonMember(trans_is_member);                
                 loadPayment(trans,transItemsList);
-                activeTab('tab2');
+                activeTab('tab3');
                 notif('Metode Pembayaran');
             }
         });
@@ -1125,6 +1138,7 @@
             // var trans_sales_id        = 0;                           
             var trans_date            = $("#trans_date").val();                                    
             var trans_item_count      = transItemsList.length;
+            var distance            = $("#trans_vehicle_distance").val();       
 
             if(parseInt(trans_item_count) < 1){
                 notif(0,order_alias+' Detail masih kosong');
@@ -1195,6 +1209,10 @@
                     info_card_year:$("#edc_year").val(),
                     info_card_month:$("#edc_month").val(),                    
                     info_card_type:$("#edc_card_type").find(':selected').val(),
+                    trans_vehicle_brand: $("#trans_vehicle_brand").find(":selected").val(),
+                    trans_vehicle_brand_type_name: $("#trans_vehicle_brand_type_name").find(":selected").val(),
+                    trans_vehicle_plate_number: $("#trans_vehicle_plate_number").val(),
+                    trans_vehicle_distance: parseFloat(removeCommas(distance))                    
                 }
                 var data = {
                     action: 'payment_create',
@@ -1231,7 +1249,11 @@
                                 contact_name:d.result.contact_name,
                                 contact_phone:d.result.contact_phone,
                                 paid_type_id:d.result.paid_type_id,
-                                paid_type_name:d.result.paid_type_name
+                                paid_type_name:d.result.paid_type_name,
+                                trans_vehicle_brand: $("#trans_vehicle_brand").find(":selected").val(),
+                                trans_vehicle_brand_type_name: $("#trans_vehicle_brand_type_name").find(":selected").val(),
+                                trans_vehicle_plate_number: $("#trans_vehicle_plate_number").val(),
+                                trans_vehicle_distance: $("#trans_vehicle_distance").val()                                   
                             }
                             paymentSuccess(p);
                             activeTab("tab0");
@@ -1571,8 +1593,8 @@
                                 // var filter_dir      = 0;
                                 var p = url_print_all + '?request=' + request;
                                     p += '&format='+format;
-                                    p += '&start_date='+$("#start").val();
-                                    p += '&end_date='+$("#end").val();                                    
+                                    p += '&start_date='+$("#filter_trans_date").attr('data-start')
+                                    p += '&end_date='+$("#filter_trans_date").attr('data-end');                                    
                                     p += '&contact='+filter_contact;
                                     p += '&product='+filter_product;
                                     p += '&type_paid=' + filter_type;
@@ -1699,48 +1721,7 @@
             }else{
                 notif(0,'Data tidak di temukan');
             }        
-        });
-        // $(document).on("click", ".btn_print_payment", function () {
-        //     var trans_id = $(this).attr("data-id");
-        //     var trans_session = $(this).attr("data-session");
-        //     var x = screen.width / 2 - 700 / 2;
-        //     var y = screen.height / 2 - 450 / 2;
-        //     var print_url = url_print + '/' + trans_id;
-
-        //     // var print_url = url_print_payment + '/' + tsession;
-        //     // var win = window.open(print_url, 'Print Payment', 'width=700,height=485,left=' + x + ',top=' + y + '').print();
-        //     if(parseInt(trans_id) > 0){
-        //         var set_print_url = url_print + '_transaction/' + trans_id;
-        //         $.ajax({
-        //             type: "get",
-        //             url: set_print_url,
-        //             data: {action: 'print_raw'},
-        //             dataType: 'json',cache: 'false',
-        //             beforeSend: function () {
-        //                 notif(1, 'Perintah print dikirim');
-        //             },
-        //             success: function (d) {
-        //                 var s = d.status;
-        //                 var m = d.message;
-        //                 if (parseInt(s) == 1) {
-        //                     if(parseInt(d.print_to) == 0){
-        //                         //For Localhost
-        //                         window.open(d.print_url).print();
-        //                     }else{
-        //                         //For RawBT                                
-        //                         return printFromUrl(d.print_url);                              
-        //                     }
-        //                 } else {
-        //                     notif(s, m);
-        //                 }
-        //             }, error: function (xhr, Status, err) {
-        //                 notif(0, 'Error');
-        //             }
-        //         });
-        //     }else{
-        //         notif(0,'Data tidak ditemukan / belum dibayar');
-        //     }          
-        // });                
+        });             
         $(document).on("click",".btn_print_all_order",function() {
             var id = $(this).attr("data-id"); 
             var action = $(this).attr('data-action'); //1,2
@@ -2273,7 +2254,7 @@
                             price = d[a]['product_price_promo'];
                         }
 
-                        dsp += '<div class="col-lg-4 col-md-4 col-sm-4 col-xs-6 btn_save_trans_item product_tab_detail_item"';
+                        dsp += '<div class="col-lg-2 col-md-2 col-sm-2 col-xs-6 btn_save_trans_item product_tab_detail_item"';
                                 dsp += 'data-product-id="' + d[a]['product_id'] + '"';
                                 dsp += 'data-product-code="' + d[a]['product_code'] + '"';
                                 dsp += 'data-product-name="' + d[a]['product_name'] + '"';
@@ -2353,7 +2334,7 @@
                                         price = d.result[a]['product_price_promo'];
                                     }
 
-                                    dsp += '<div class="col-lg-4 col-md-4 col-sm-4 col-xs-6 btn_save_trans_item product_tab_detail_item"';
+                                    dsp += '<div class="col-lg-2 col-md-2 col-sm-2 col-xs-6 btn_save_trans_item product_tab_detail_item"';
                                             dsp += 'data-product-id="' + d.result[a]['product_id'] + '"';
                                             dsp += 'data-product-code="' + d.result[a]['product_code'] + '"';
                                             dsp += 'data-product-name="' + d.result[a]['product_name'] + '"';

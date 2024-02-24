@@ -2508,7 +2508,7 @@ class Order extends MY_Controller{
                     $contact_id     = !empty($data['payment_contact_id']) ? $data['payment_contact_id'] : 0;
                     $contact_name   = !empty($data['payment_contact_name']) ? $data['payment_contact_name'] : null; //NonMember Used
                     $contact_phone  = !empty($data['payment_contact_phone']) ? $data['payment_contact_phone'] : null;                                        
-                    // die;
+                    
                     if(intval($type) < 1){
                         $next =false;
                         $return->message = 'Metode pembayaran belum dipilih';
@@ -2521,7 +2521,7 @@ class Order extends MY_Controller{
                         $next=false;
                         $return->message = 'Total Tagihan tidak sesuai';                        
                     }
-                    // var_dump($next);die;
+                    
                     if($next){
                         // Make Params Transaction
                         $generate_session   = $this->random_session(20);
@@ -2532,7 +2532,7 @@ class Order extends MY_Controller{
                         $journal_item_account = null;
                         $journal_item_ref     = !empty($data['journal_item_ref']) ? $data['journal_item_ref'] : null;
 
-                        //Member ?
+                        //Customer or Not ?
                         if(intval($contact_id) > 0){
                             $get_contact = $this->Kontak_model->get_kontak($contact_id);
                             $params['trans_contact_name'] = $contact_name;
@@ -2557,6 +2557,7 @@ class Order extends MY_Controller{
                             $set_contact_phone = $contact_phone;                            
                         }
 
+                        //Prepare account for journal_item
                         if($type==1){ // 1=Cash 
                             $journal_item_account = $data['modal_akun_cash'];
                             $params = array(
@@ -2768,14 +2769,31 @@ class Order extends MY_Controller{
                             $return->message = 'Harap pilih jenis pembayaran';
                             $next = false;
                         }
-                        // var_dump($params);die;
+                        
                         //Voucher Detected
                         if(intval($voucher_id) > 0){
                             $params['trans_voucher_id'] = intval($voucher_id);
                             $params['trans_voucher'] = $total_before - $total_after;
                         }
 
-                        //Params Complete Lanjut
+                        /* Prepare to INSERT
+                            1.  INSERT `trans`
+                            2.  SELECT `trans`
+                            3.  LOOP `orders` POST
+                                    UPDATE `order` {order_flag=1, order_trans_id=?}
+                                    GET LOOP `order`
+                                        UPDATE `references` {ref_use_type=0}
+                                    GET LOOP `order_item`
+                                        INSERT `trans_items`
+                                END LOOP `orders` POST
+                            4.  INSERT `journal`
+                            5.  INSERT `journal_item` DEBIT [CASH,TRANSFER,EDC,FREE]
+                                - OPTIONAL INSERT `journal_item` DEBIT [DISCOUNT]
+                                - OPTIONAL INSERT `journal_item` DEBIT [VOUCHER]                                
+                            6.  GET LOOP `trans_item` 
+                                    INSERT `journal_item` CREDIT [PENDAPATAN,PENJUALAN]
+                                END GET LOOP `trans_item`
+                        */
                         if($next){
                             $set_data = $this->Transaksi_model->add_transaksi($params);
                             if($set_data){

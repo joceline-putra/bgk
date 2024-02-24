@@ -66,7 +66,7 @@ class Login extends My_Controller{
         $this->app_logo     = site_url().'upload/branch/default_logo.png';
         $this->app_logo_sidebar = site_url().'upload/branch/default_sidebar.png';        
         
-        $this->default_menu_cashier = site_url().'sales/pos3';
+        $this->default_menu_cashier = site_url().'sales/pos2';
     }
     function index(){ //Default Login Index Layout
         //Logo Branch
@@ -1597,13 +1597,14 @@ class Login extends My_Controller{
                         $curl_link .= '&file='.$v['message_url'];
                     }
 
-                    // var_dump($curl_link);die;
+                    // echo $curl_link;die;
                     $curl = curl_init();
                     curl_setopt_array($curl, array(
                         CURLOPT_URL => $curl_link,
                         // CURLOPT_HEADER => 0,
                         CURLOPT_RETURNTRANSFER => 1,
-                        // CURLOPT_SSL_VERIFYHOST => 2,
+                        CURLOPT_SSL_VERIFYHOST => FALSE,
+                        CURLOPT_SSL_VERIFYPEER => FALSE,
                         // CURLOPT_SSL_VERIFYPEER => 0,
                         // CURLOPT_TIMEOUT => 30,
                         // CURLOPT_POST =>  1,

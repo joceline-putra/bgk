@@ -30,22 +30,24 @@ class Pos2 extends MY_Controller{
         $this->load->model('Account_map_model'); 
         $this->load->model('Referensi_model');         
 
-        $this->print_to         = 1; //0 = Local, 1 = Bluetooth
+        $this->print_to         = 0; //0 = Local, 1 = Bluetooth
         $this->whatsapp_config  = 1;          
 
         $this->contact_1_alias  = 'Customer';
-        $this->contact_2_alias  = 'Waitress';
-        $this->ref_alias        = 'Meja';         
+        $this->contact_2_alias  = 'Mekanik';
+        $this->ref_alias        = 'Pit Area';         
         
         $this->order_alias      = 'Order';
         $this->trans_alias      = 'Trans';
         
+        $this->checkout_alias      = 'Checkout';        
         $this->payment_alias    = 'Penjualan';  
         $this->dp_alias         = 'Down Payment'; 
         $this->product_alias    = 'Produk';        
         
         $this->form_title       = 'POS 2';
-        $this->form_type        = 222;       
+        $this->form_type        = 2;       
+        $this->order_type       = 222; 
 
         $this->file_view        = 'layouts/admin/menu/sales/pos/pos_v2';
         $this->file_js          = 'layouts/admin/menu/sales/pos/pos_v2_js';     
@@ -69,7 +71,6 @@ class Pos2 extends MY_Controller{
             $post_data  = $this->input->post('data');
             $get        = $this->input->get();
             $action     = !empty($this->input->post('action')) ? $this->input->post('action') : false;
-            $identity   = $this->form_type;
             $datas      = json_decode($post_data, TRUE);
 
             switch($action){
@@ -114,7 +115,7 @@ class Pos2 extends MY_Controller{
                     $params_datatable = array(
                         'orders.order_date >' => $date_start,
                         'orders.order_date <' => $date_end,
-                        'orders.order_type' => intval($identity),
+                        'orders.order_type' => intval($this->order_type),
                         'orders.order_flag <' => 4,
                         'orders.order_branch_id' => intval($session_branch_id)
                     );
@@ -122,7 +123,7 @@ class Pos2 extends MY_Controller{
                         $params_datatable = array(
                             'orders.order_date >' => $date_start,
                             'orders.order_date <' => $date_end,
-                            'orders.order_type' => intval($identity),
+                            'orders.order_type' => intval($this->order_type),
                             'orders.order_flag <' => 4,
                             'orders.order_branch_id' => intval($session_branch_id),
                             'orders.order_contact_id' => intval($contact)
@@ -213,7 +214,7 @@ class Pos2 extends MY_Controller{
                     $params_datatable = array(
                         'trans.trans_date >' => $date_start,
                         'trans.trans_date <' => $date_end,
-                        'trans.trans_type' => intval($identity),
+                        'trans.trans_type' => intval($this->form_type),
                         'trans.trans_flag <' => 4,
                         'trans.trans_branch_id' => intval($session_branch_id)
                     );
@@ -221,7 +222,7 @@ class Pos2 extends MY_Controller{
                         $params_datatable = array(
                             'trans.trans_date >' => $date_start,
                             'trans.trans_date <' => $date_end,
-                            'trans.trans_type' => intval($identity),
+                            'trans.trans_type' => intval($this->form_type),
                             'trans.trans_flag <' => 4,
                             'trans.trans_branch_id' => intval($session_branch_id),
                             'trans.trans_contact_id' => intval($contact)
@@ -979,7 +980,7 @@ class Pos2 extends MY_Controller{
 
                         $params = array(
                             'trans_branch_id' => $session_branch_id,
-                            'trans_type' => 2,
+                            'trans_type' => $this->form_type,
                             'trans_number' => $document_number,
                             'trans_date' => $document_date,
                             'trans_user_id' => $session_user_id,
@@ -997,9 +998,13 @@ class Pos2 extends MY_Controller{
                             'trans_paid_type' => $payment_method,
                             'trans_session' => $document_session,
                             //   'trans_ppn' => !empty($post['trans_ppn']) ? $post['trans_voucher_id'] : null,
-                              'trans_sales_id' => $sales_id,
+                            'trans_sales_id' => $sales_id,
                             //   'trans_voucher_id' => null,
-                              'trans_ref_id' => $ref_id,
+                            'trans_ref_id' => $ref_id,
+                            'trans_vehicle_brand' => !empty($datas['trans_vehicle_brand']) ? $datas['trans_vehicle_brand'] : null,
+                            'trans_vehicle_brand_type_name' => !empty($datas['trans_vehicle_brand_type_name']) ? $datas['trans_vehicle_brand_type_name'] : null,
+                            'trans_vehicle_plate_number' => !empty($datas['trans_vehicle_plate_number']) ? $datas['trans_vehicle_plate_number'] : null,
+                            'trans_vehicle_distance' => !empty($datas['trans_vehicle_distance']) ? $datas['trans_vehicle_distance'] : null
                         );
 
                         //Customer or Not ?
@@ -1020,7 +1025,7 @@ class Pos2 extends MY_Controller{
                             $set_contact_phone = $payment_contact_phone;                            
                         }
 
-                        //Insert journal_item
+                        //Prepare account for journal_item
                         if($payment_method == 1){ //Cash
                             $set_account_id = !empty($datas['account_cash']) ? $datas['account_cash'] : 0;                              
                         }else if($payment_method == 2){ //Transfer 
@@ -1042,9 +1047,10 @@ class Pos2 extends MY_Controller{
                             $set_account_id = !empty($datas['account_qris']) ? $datas['account_qris'] : 0;                             
                         }
                         
+                        //Handling account not selected
                         if($set_account_id == 0){
                             $next = false;
-                            $message = 'Batal tersimpan, Akun belum terpilih';
+                            $message = 'Batal tersimpan, Akun belum terpilih '.$payment_method;
                         }else{
                             $get_paid_type = $this->Type_paid_model->get_type_paid($payment_method);
                             $paid_type_name = $get_paid_type['paid_name'];
@@ -1055,6 +1061,19 @@ class Pos2 extends MY_Controller{
                                 'trans_name' => $trans_name
                             );
                             $check_exists = $this->Trans_model->check_data_exist($params_check);
+                        */
+
+                        /* Prepare to INSERT
+                            1.  INSERT `trans`
+                            2.  SELECT `trans`
+                            3.  LOOP `trans_item` POST
+                                    INSERT `trans_item`
+                                END LOOP `trans_item` POST
+                            4.  INSERT `journal`
+                            5.  INSERT `journal_item` DEBIT [CASH,TRANSFER,EDC,FREE]
+                            6.  GET LOOP `trans_item` 
+                                    INSERT `journal_item` CREDIT [PENDAPATAN,PENJUALAN]
+                                END GET LOOP `trans_item`
                         */
                         if($next){
                             $check_exists = false;
@@ -1070,7 +1089,7 @@ class Pos2 extends MY_Controller{
                                         $random_item_session     = $this->random_code(20);
                                         $params_items = array(
                                             'trans_item_branch_id' => $session_branch_id,
-                                            'trans_item_type' => 2,
+                                            'trans_item_type' => $this->form_type,
                                             'trans_item_type_name' => 'Penjualan',
                                             'trans_item_trans_id' => $set_document_id,
                                             'trans_item_product_id' => $v['product_id'],
@@ -1283,6 +1302,7 @@ class Pos2 extends MY_Controller{
             $data['ref_alias']        = $this->ref_alias;         
             $data['order_alias']      = $this->order_alias;
             $data['trans_alias']      = $this->trans_alias;
+            $data['checkout_alias']   = $this->checkout_alias;            
             $data['payment_alias']    = $this->payment_alias;  
             $data['dp_alias']         = $this->dp_alias;
             $data['product_alias']    = $this->product_alias;            
@@ -1296,7 +1316,8 @@ class Pos2 extends MY_Controller{
             $data['whatsapp_config']  = $this->whatsapp_config;
             $data['title']            = $this->form_title;
             $data['identity']         = $this->form_type;
-
+            $data['order_type']         = $this->order_type;            
+            // var_dump($data['account_payment']);die;
             $data['_view'] = $this->file_view;
             $this->load->view('layouts/admin/index',$data);
             $this->load->view($this->file_js,$data);                      
@@ -1313,8 +1334,22 @@ class Pos2 extends MY_Controller{
             trans_recap
             trans_detail
         */
-        $date_start = date('Y-m-d H:i:s', strtotime($this->input->get('start_date').' 00:00:00'));
-        $date_end   = date('Y-m-d H:i:s', strtotime($this->input->get('end_date').' 23:59:59'));
+        if(strlen($this->input->get('start_date')) > 10){
+            $date_start = str_replace("%20"," ",$this->input->get('start_date').":00");
+        }else{
+            $date_start = date('Y-m-d H:i:s', strtotime($this->input->get('start_date').' 00:00:00')); 
+        }
+
+        if(strlen($this->input->get('end_date')) > 10){
+            $date_end = str_replace("%20"," ",$this->input->get('end_date')."");
+        }else{
+            $date_end   = date('Y-m-d H:i:s', strtotime($this->input->get('end_date').' 23:59:59'));            
+        }
+
+        $set_date_start = date("Y-m-d H:i:s", strtotime($date_start));
+        $set_date_end = date("Y-m-d H:i:s", strtotime($date_end));            
+        // var_dump($set_date_start,$set_date_end);die;    
+
         $contact    = intval($this->input->get('contact'));
         $product    = intval($this->input->get('product'));
         $sales      = intval($this->input->get('sales'));
@@ -1343,10 +1378,10 @@ class Pos2 extends MY_Controller{
         $search = null;
 
         $params_datatable = array(
-            'trans_branch_id' => $session_branch_id,
+            'trans_branch_id' => intval($session_branch_id),
             'trans_type' => 2,
-            'trans_date >' => $date_start,
-            'trans_date <' => $date_end
+            'trans_date >' => $set_date_start,
+            'trans_date <' => $set_date_end
         );
         if(intval($contact) > 0){
             $params_datatable['contact_id'] = intval($contact);
@@ -1436,14 +1471,14 @@ class Pos2 extends MY_Controller{
             $params = array(
                 'trans_branch_id' => $session_branch_id,
                 'trans_type' => 2,
-                'trans_date >' => $date_start,
-                'trans_date <' => $date_end                
+                'trans_date >' => $set_date_start,
+                'trans_date <' => $set_date_end                
             );
             $params_items = array(
                 'trans_item_branch_id' => $session_branch_id,            
                 'trans_item_type' => 2,
-                'trans_item_date >' => $date_start,
-                'trans_item_date <' => $date_end
+                'trans_item_date >' => $set_date_start,
+                'trans_item_date <' => $set_date_end
             );
             // var_dump($params_items);die;
             $get_trans = $this->Transaksi_model->get_all_transaksi_group_by_paid_type($params,null,null,null,'trans_id','asc');
@@ -1488,13 +1523,13 @@ class Pos2 extends MY_Controller{
             $total_different = $total_expected - $total_actual;
 
             //Branch
-            $text .= dot_set_wrap_1($data['branch']['branch_name']);    
-            $text .= dot_set_wrap_1($data['branch']['branch_address']);
-            $text .= dot_set_wrap_1($data['branch']['branch_phone_1']);            
+            $text .= dot_set_wrap_0($data['branch']['branch_name']," ","BOTH");    
+            $text .= dot_set_wrap_0($data['branch']['branch_address']," ","BOTH");
+            $text .= dot_set_wrap_0($data['branch']['branch_phone_1']," ","BOTH");            
             
             //User Print
             $text .= dot_set_line('-',$word_wrap_width);
-            $text .= dot_set_wrap_1('PRINT BY');       
+            $text .= dot_set_wrap_0('PRINT BY'," ","BOTH");       
             $text .= dot_set_line('-',$word_wrap_width);        
             $text .= dot_set_wrap_2('User',$session['user_data']['user_name']);
             $text .= dot_set_wrap_0('Start Date '.date("d-M-Y, H:i",strtotime($date_start))," ","RIGHT");
@@ -1513,28 +1548,28 @@ class Pos2 extends MY_Controller{
             // $text .= dot_set_line('-',$word_wrap_width);
 
             //Order Details
-            $text .= dot_set_wrap_1('ITEM DETAIL');    
-            $text .= dot_set_line('-',$word_wrap_width);        
+            $text .= dot_set_wrap_0('ITEM DETAIL'," ","BOTH");
+            $text .= dot_set_line('-',$word_wrap_width);
             $text .= dot_set_wrap_2('SOLD ITEM','');
             foreach($get_t_item as $v):        
                 $text .= dot_set_wrap_2($v['product_name'],number_format($v['trans_item_sell_total']));
                 $text .= dot_set_wrap_0(number_format($v['trans_item_out_qty']).' x '.number_format($v['trans_item_out_price'])," ",'RIGHT');            
-                $text .= dot_set_wrap_1(" ");
-            endforeach;    
+                $text .= dot_set_wrap_0(" "," ","BOTH");
+            endforeach;
             $text .= dot_set_line(' ',$word_wrap_width);        
-            $text .= dot_set_wrap_2('TOTAL ITEM',number_format($total_sell));              
+            $text .= dot_set_wrap_2('TOTAL ITEM',number_format($total_sell));
             $text .= dot_set_line('-',$word_wrap_width);        
 
             //Payment Details
-            $text .= dot_set_wrap_1('PAYMENT DETAIL');       
+            $text .= dot_set_wrap_0('PAYMENT DETAIL'," ","BOTH");
             $text .= dot_set_line('-',$word_wrap_width);  
             $text .= dot_set_wrap_2('Cash',number_format($total_paid_cash));
-            $text .= dot_set_wrap_2('Bank Transfer',number_format($total_paid_transfer));        
-            $text .= dot_set_wrap_2('EDC Card',number_format($total_paid_edc));        
+            $text .= dot_set_wrap_2('Bank Transfer',number_format($total_paid_transfer));
+            $text .= dot_set_wrap_2('EDC Card',number_format($total_paid_edc));
             $text .= dot_set_wrap_2('QRIS',number_format($total_paid_qris));
-            $text .= dot_set_wrap_2('Deposit',number_format($total_paid_dp));
-            $text .= dot_set_wrap_2('Gratis',number_format($total_paid_free));
-            $text .= dot_set_wrap_2('Voucher',number_format($total_paid_voucher));                                
+            // $text .= dot_set_wrap_2('Deposit',number_format($total_paid_dp));
+            // $text .= dot_set_wrap_2('Gratis',number_format($total_paid_free));
+            $text .= dot_set_wrap_2('Voucher',number_format($total_paid_voucher));
             $text .= dot_set_line('-',$word_wrap_width);
 
             //Summary
@@ -1543,7 +1578,7 @@ class Pos2 extends MY_Controller{
         // echo json_encode($mdatas);die;
         // echo print('<pre>'.$text.'</pre>');die;
 
-        $data['periode']        = date("d-M-Y, H:i", strtotime($date_start)).' sd '.date("d-M-Y, H:i", strtotime($date_end)); 
+        $data['periode']        = date("d-M-Y, H:i", strtotime($set_date_start)).' sd '.date("d-M-Y, H:i", strtotime($set_date_end)); 
         $data['content']        = $mdatas;
         $data['title']          = "Laporan ".$this->trans_alias." Rekap";
         $data['contact_alias']  = $this->contact_1_alias;
@@ -1921,6 +1956,19 @@ class Pos2 extends MY_Controller{
             $text .= dot_set_wrap_0(date("d/m/Y - H:i:s", strtotime($get_trans['trans_date']))," ","BOTH");    
             // $text .= dot_set_wrap_2('Cashier',$get_trans['contact_name']);
 
+            // if(!empty($get_trans['trans_vehicle_brand'])){
+                $text .= dot_set_wrap_3('Plat',':',$get_trans['trans_vehicle_plate_number']);    
+            // }   
+            // if(!empty($get_trans['trans_vehicle_brand'])){
+                $text .= dot_set_wrap_3('Motor',':',$get_trans['trans_vehicle_brand']);    
+            // }   
+            // if(!empty($get_trans['trans_vehicle_brand_type_name'])){
+                $text .= dot_set_wrap_3('Type',':',$get_trans['trans_vehicle_brand_type_name']);    
+            // }        
+            // if(!empty($get_trans['trans_vehicle_distance'])){
+                $text .= dot_set_wrap_3('Posisi km',':',number_format($get_trans['trans_vehicle_distance'],0,'',','));    
+            // }                           
+            
             $text .= "\n";
             $text .= dot_set_line('-',$word_wrap_width);
 
