@@ -23,6 +23,7 @@
 
     $(document).ready(function () {
         console.log('#search-produk: Pending function, Like 291 to 378');
+        // $("#modal-payment-list").modal('show');
         // $("body").toggleMenu();
         // $("#horizontal-menu").css('margin-left','0!important');
         // $("#page-content").css("margin-left","0");
@@ -2853,11 +2854,11 @@
                                                 $("#btn-save-payment").attr('disabled',false);
                                                 $("#btn-save-payment").html('<span class="fas fa-cash-register white"></span> Bayar');
                                                                                         
-                                                $("#modal-trans-save").modal('hide');
+                                                $("#modal-payment-form").modal('hide');
                                                 $("#method-payment-total").val('');
                                                 $("#method-payment-received").val('');
                                                 $("#method-payment-change").val('');
-                                                // $("#modal-trans-save").toggle();
+                                                // $("#").toggle();
 
                                                 // //Prepare Print
                                                 // $(".btn-print-payment").attr('data-id', d.result.trans_id);
@@ -2897,7 +2898,7 @@
 
                                                 notif(1, d.message);
                                                 loadRoom({});
-                                                loadPaymentItem();
+                                                // loadPaymentItem();
                                                 order_table.ajax.reload(null,false);
                                                 trans_table.ajax.reload(null,false);
                                                 $("#payment_contact_id").val(0).trigger('change');
@@ -4156,10 +4157,11 @@
                                     dsp += '</button>';                                    
                                 dsp += '</td>';
                                 dsp += '<td>';
-                                    dsp += '<label class="label label-primary"><b>'+ d.result[a]['ref_name'] + '</label></b><br>';
-                                    // dsp += '<label class="label label-success"><b><i class="fas fa-user"></i> '+ d.result[a]['employee_name'] + '</b></label><br>';
+                                dsp += '<label class="label label-primary"><b>'+ d.result[a]['ref_name'] + '</label></b>';
+                                dsp += '<label class="label label-success"><b>'+ d.result[a]['order_number'] + '</label></b><br>';
+                                // dsp += '<label class="label label-success"><b><i class="fas fa-user"></i> '+ d.result[a]['employee_name'] + '</b></label><br>';
                                     dsp += '<b>'+d.result[a]['employee_name']+'</b><br>';
-                                    dsp += '<b>'+d.result[a]['order_number']+'</b><br>';
+                                    // dsp += '<b>'+d.result[a]['order_number']+'</b><br>';
                                     dsp += '<b>'+d.result[a]['order_date_format']+'</b><br>';
                                     dsp += '<b>'+ d.result[a]['contact_name'] + '</b>';                                        
                                     dsp += order_list;
@@ -4370,7 +4372,7 @@
             $(".btn-print-payment").attr('data-number', d.trans_number);
             $(".btn-print-payment").attr('data-session', d.trans_session);
 
-            // $("#modal-trans-save").modal('toggle');
+            // $("#").modal('toggle');
 
             //Set Text
             $(".modal-print-trans-number").html(' :' + d.trans_number);
@@ -4794,7 +4796,7 @@
                                 if (parseInt(d.status) == 1) {
                                     notif(1, d.message);
                                     order_table.ajax.reload(null, false);
-                                    $("#modal-trans-save").modal('hide');
+                                    $("#modal-payment-form").modal('hide');
                                 } else {
                                     notif(0, d.message);
                                 }

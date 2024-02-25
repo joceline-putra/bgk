@@ -105,7 +105,7 @@ class Order extends MY_Controller{
         $this->payment_alias    = 'Payment'; 
         $this->dp_alias         = 'Deposit';
 
-        $this->print_to         = 1; //0 = Local, 1 = Bluetooth
+        $this->print_to         = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? 1 : 0); //0 = Local, 1 = Bluetooth
         $this->whatsapp_config  = 1;
         $this->module_approval   = 0; //Approval
         $this->module_attachment   = 0; //Attachment     

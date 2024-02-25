@@ -1897,58 +1897,70 @@ class Message extends CI_Controller{
                     );
                     $get_trans_items = $this->Transaksi_model->get_transaksi_item_custom($where);
                     // var_dump($get_trans_items);die;
-                    $get_order = $this->Order_model->get_all_orders(array('order_trans_id'=> $trans['trans_id']),$search = null,$limit = null,$start = null,$order = null,$dir = null);
-                    $order_data = array();
-                    if(count($get_order)>0){
-                        foreach($get_order as $h){
-                            $get_order_item = $this->Order_model->get_all_order_items(array('order_item_order_id'=> $h['order_id']),$search = null,$limit = null,$start = null,$order = null,$dir = null);
-                            $order_data[] = array(
-                                'order_id' => $h['order_id'],
-                                'order_number' => $h['order_number'],
-                                'order_date' => $h['order_date'],
-                                'order_total' => $h['order_total'],
-                                'order_total_down_payment' => $h['order_with_dp'],
-                                'order_total_grand' => $h['order_total']-$h['order_with_dp'],                            
-                                'ref_id' => $h['ref_id'],
-                                'ref_name' => $h['ref_name'],
-                                'contact_name' => $h['contact_name'],
-                                'employee_name' => $h['employee_name'],                    
-                                'user_name' => $h['user_fullname'],                            
-                                'order_items' => $get_order_item
-                            );
-                        }
-                    }
+                    // $get_order = $this->Order_model->get_all_orders(array('order_trans_id'=> $trans['trans_id']),$search = null,$limit = null,$start = null,$order = null,$dir = null);
+                    // $order_data = array();
+                    // if(count($get_order)>0){
+                    //     foreach($get_order as $h){
+                    //         $get_order_item = $this->Order_model->get_all_order_items(array('order_item_order_id'=> $h['order_id']),$search = null,$limit = null,$start = null,$order = null,$dir = null);
+                    //         $order_data[] = array(
+                    //             'order_id' => $h['order_id'],
+                    //             'order_number' => $h['order_number'],
+                    //             'order_date' => $h['order_date'],
+                    //             'order_total' => $h['order_total'],
+                    //             'order_total_down_payment' => $h['order_with_dp'],
+                    //             'order_total_grand' => $h['order_total']-$h['order_with_dp'],                            
+                    //             'ref_id' => $h['ref_id'],
+                    //             'ref_name' => $h['ref_name'],
+                    //             'contact_name' => $h['contact_name'],
+                    //             'employee_name' => $h['employee_name'],                    
+                    //             'user_name' => $h['user_fullname'],                            
+                    //             'order_items' => $get_order_item
+                    //         );
+                    //     }
+                    // }
 
-                    //Content Order Items
-                    foreach($order_data as $i => $v):
-                        //$text .= $v['order_number']."\n";
-                        $b .= $v['order_number'].', '.$v['order_date']."\n";                          
-                        $b .= $v['ref_name']."\n";
-                        // $b .= $v['employee_name']."\n";       
-                        $b .= "\n";                      
-                        foreach($v['order_items'] as $i):
-                            $b .= '*'.$i['product_name']."*";
-                            // $b .= '_@'.number_format($i['order_item_price'],0,'',',') . ' x '. number_format($i['order_item_qty'],0,'',',').','. number_format($i['order_item_total'],0,'',',')."_"."\n";
-                            $b .= ' *@'.number_format($i['order_item_total'],0,'',',')."*"."\n";                            
-                        endforeach;            
-                        $b .= "\n"; 
-                    endforeach;
+                    // //Content Order Items
+                    // foreach($order_data as $i => $v):
+                    //     //$text .= $v['order_number']."\n";
+                    //     $b .= $v['order_number'].', '.$v['order_date']."\n";                          
+                    //     $b .= $v['ref_name']."\n";
+                    //     // $b .= $v['employee_name']."\n";       
+                    //     $b .= "\n";                      
+                    //     foreach($v['order_items'] as $i):
+                    //         $b .= '*'.$i['product_name']."*";
+                    //         // $b .= '_@'.number_format($i['order_item_price'],0,'',',') . ' x '. number_format($i['order_item_qty'],0,'',',').','. number_format($i['order_item_total'],0,'',',')."_"."\n";
+                    //         $b .= ' *@'.number_format($i['order_item_total'],0,'',',')."*"."\n";                            
+                    //     endforeach;            
+                    //     $b .= "\n"; 
+                    // endforeach;
                                     
                     //Content Trans Items
-                    // foreach($get_trans_items as $v):
-                    //     $b .= '~'.$v['product_name'].'~'."\n";
-                    //     $b .= '_@'.number_format($v['trans_item_out_qty'],0,'',',') . ' x '. number_format($v['trans_item_sell_price'],0,'',',').', '.number_format($v['trans_item_sell_total'],0,'',',').'_';            
-                    // endforeach;    
+                    foreach($get_trans_items as $v):
+                        $b .= '~'.$v['product_name'].'~'."\n";
+                        $b .= '@'.number_format($v['trans_item_out_qty'],0,'',',') . ' x '. number_format($v['trans_item_sell_price'],0,'',',').', '.number_format($v['trans_item_sell_total'],0,'',',')."\r\n\r\n";            
+                    endforeach;    
                     
                     $a .= '📄 *Invoice '.$branch['branch_name']."*"."\r\n\r\n";
-                    $a .= 'Halo Bpk/Ibu *'.$trans['trans_contact_name'].'*, berikut Invoice yang kami kirimkan'."\r\n\r\n";
+                    // $a .= 'Halo Bpk/Ibu *'.$trans['trans_contact_name'].'*, berikut Invoice yang kami kirimkan'."\r\n\r\n";
                     $a .= '*#Invoice:*'."\r\n";
-                    $a .= $trans['trans_number'].", ".date("d-m-Y, H:i", strtotime($trans['trans_date']))."\r\n"."\r\n";
+                    $a .= $branch['branch_name']."\r\n";
+                    $a .= $trans['trans_number']."\r\n";
+                    $a .= date("d-M-Y, H:i", strtotime($trans['trans_date']))."\r\n"."\r\n";
+
+                    if(!empty($trans['trans_vehicle_brand'])){
+                        $a .= "Motor: ".$trans['trans_vehicle_brand']."\r\n";   
+                    }                                   
+                    if(!empty($trans['trans_vehicle_plate_number'])){
+                        $a .= "Plat: ".$trans['trans_vehicle_plate_number']."\r\n";   
+                    }
+                    if(!empty($trans['trans_vehicle_distance'])){
+                        $a .= "km: ".$trans['trans_vehicle_distance']."\r\n";   
+                    }     
 
                     $c .= $a;
 
                     //Deskripsi
-                    $c .= '*#Item:*'."\r\n";
+                    $c .= "\r\n".'*#Item:*'."\r\n";
                     // if(count($get_trans_items) > 0){
                         $c .= $b;
                     // }else{
@@ -1957,7 +1969,7 @@ class Message extends CI_Controller{
 
                     // $c .= "\r\n";
                     $c .= "*#Total*"."\r\n";
-                    $c .= "Subtotal : Rp. ".number_format($trans['trans_total_dpp'],0)."\r\n";
+                    $c .= "Total : Rp. ".number_format($trans['trans_total_dpp'],0)."\r\n";
                     if(!empty($trans['trans_voucher']) && $trans['trans_voucher'] > 0){
                         $c .= "Voucher : - Rp. ".number_format($trans['trans_voucher'],0)."\r\n";
                     }
@@ -2002,8 +2014,8 @@ class Message extends CI_Controller{
                     }
                     
                     //Keterangan
-                    $c .= "\r\n"."*#Keterangan:*"."\r\n";
                     if(!empty($trans['trans_note'])){
+                        $c .= "\r\n"."*#Keterangan:*"."\r\n";
                         $c .= $trans['trans_note'].""."\r\n"."\r\n";   
                     }else{
                         $c .= '-'."\r\n";

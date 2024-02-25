@@ -14,7 +14,8 @@
     var url_contact         = "<?= base_url('kontak/manage'); ?>";  
     var url_message         = "<?= base_url('message'); ?>";          
     var base_url            = "<?= site_url(); ?>";
-    
+    var url_voucher         = "<?= base_url('voucher'); ?>";    
+
     var product_image       = "<?= site_url('upload/noimage.png'); ?>";
 
     let contact_1_alias     = "<?php echo $contact_1_alias; ?>";
@@ -1189,9 +1190,11 @@
                     payment_contact_phone: $("#payment_contact_phone").val(),
                     payment_contact_id: payment_contact_id,
                     payment_total_before: transTotal,
-                    payment_total: transTotal,
+                    payment_total: parseFloat(removeCommas(paid_total)),
                     payment_total_received: parseFloat(removeCommas(paid_received)),
                     payment_total_change: parseFloat(removeCommas(paid_change)),
+                    voucher_id: $("#btn_voucher_search").attr('data-voucher-id'),
+                    voucher_nominal:parseFloat(removeCommas($("#voucher_nominal").val())),
                     trans_item_list: transItemsList,
                     ref_id:trans_ref_id,
                     sales_id:trans_sales_id,
@@ -1236,6 +1239,7 @@
                             formTransReset();
                             formPaymentReset();
                             globalVariableReset();
+                            voucherReset(4);
                             trans_table.ajax.reload();
                             var p = {
                                 trans_id:d.result.trans_id,
@@ -1904,7 +1908,8 @@
         });
         $(document).on("click","#payment_received", function (e) {
             e.preventDefault(); e.stopPropagation();
-            var s = removeCommas($("#payment_total_before").val());
+            // var s = removeCommas($("#payment_total_before").val());
+            var s = removeCommas($("#payment_total").val());   
             modalNumberChoice(s);
         });
         $(document).on("input","#payment_received", function (e) {
@@ -2079,6 +2084,241 @@
             $("#modal-scanner").modal('show');
             return scanner.render(scannerResult);  
         });
+        //Voucher
+        $(document).on("keyup","#voucher_code",function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $(this).val($(this).val().toUpperCase());
+        });        
+        $(document).on("click","#btn_voucher_search",function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var term = $("#voucher_code").val();
+            var button_action = $(this).attr('data-id');
+            if(button_action == 1){
+                if(term.length > 2){
+                    let form = new FormData();
+                    form.append('action', 'redeem_search');
+                    form.append('voucher_code', term);
+                    $.ajax({
+                        type: "post",
+                        url: url_voucher,
+                        data: form, 
+                        dataType: 'json', cache: 'false', 
+                        contentType: false, processData: false,
+                        beforeSend:function(){
+                            $("#btn_voucher_search").html('<span class="fas fa-spinner fa-spin"></span> Loading');
+                        },
+                        success:function(d){
+                            let s = d.status;
+                            let m = d.message;
+                            let r = d.result;
+                            if(parseInt(s) == 1){ //Voucher Available / Ready
+                                notif(s,m);
+                                voucherProcess(1,r);
+                            }else if(parseInt(s) == 4){ //Voucher Expired
+                                var params = {
+                                    voucher_status:r.voucher_status,
+                                    voucher_type_name:r.voucher_type_name,
+                                    voucher_code:r.voucher_code,
+                                    voucher_period:r.voucher_period
+                                };
+                                voucherProcess(4,params);
+                            }else{ //Voucher Not Found
+                                notif(0,m);
+                                voucherReset(0);
+                            }
+                        },
+                        error:function(xhr,status,err){
+                            notif(0,err);
+                            voucherReset(1);
+                        }
+                    });
+                }else{
+                    notif(0,'Klaim Voucher harus diisi');
+                    $("#voucher_code").focus();
+                }
+            }else if(button_action ==4){
+                voucherReset(4);
+            }
+        });
+
+        //Voucher
+        function voucherProcess(voucher_status,params){
+            console.log('voucherProcess()');
+            console.log(params);
+            var r = params;
+            if(voucher_status==1){
+                var voucher_id = 0;
+                var voucher_price = 0;
+                var voucher_minimum = 0;
+                var voucher_discount = 0;
+                var voucher_value = 0;
+
+                if(parseInt(r.voucher_id) > 0){
+                    voucher_id = r.voucher_id;
+                    voucher_type = r.voucher_type;
+                }
+
+                let title   = '<span class="fas fa-check"></span> Voucher / Promo '+r.voucher_status;
+                let content = '<b>'+r.voucher_type_name+'</b> dengan kode <b>'+r.voucher_code+'</b> tersedia dan dapat digunakan';
+                content += '<br>Voucher ini bernilai<br>';
+
+                if(voucher_type==1){
+                    voucher_price = r.voucher_price;
+                    voucher_value = voucher_price;
+                    content += '<br>Potongan Transaksi sebesar <b>'+r.voucher_price_format+'</b>';
+                    if(parseInt(r.voucher_minimum_transaction) > 0){
+                        voucher_minimum = r.voucher_minimum_transaction;
+                        content += '<br>Syarat Transaksi minimum <b>'+r.voucher_minimum_transaction_format+'</b>';
+                    }
+                }else if(voucher_type==2){
+                    voucher_discount = r.voucher_discount_percentage;
+                    voucher_value = voucher_discount;
+                    content += '<br>Diskon sebesar <b>'+r.voucher_discount_percentage_format+'%</b>';
+                }
+                
+                $.confirm({
+                    title: title,
+                    content: content,
+                    columnClass: 'col-md-5 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1',
+                    closeIcon: true, closeIconClass: 'fas fa-times',
+                    animation:'zoom', closeAnimation:'bottom', animateFromElement:false, useBootstrap:true,
+                    buttons: {
+                        button_1: {
+                            text: '<span class="fas fa-check"></span> Gunakan Voucher Ini',
+                            btnClass: 'btn-dark',
+                            keys: ['Escape'],
+                            action: function(){
+                                // var voucher_nominal = $("#voucher_nominal").val();
+                                // voucher_value diambil dari voucher_price
+                                var next = true;
+
+                                //Set Voucher ID 
+                                // $("#voucher_nominal").attr('data-id',voucher_id);
+                                $("#btn_voucher_search").attr('data-voucher-id',voucher_id);
+
+                                //Perhitungan
+                                var grand_total = parseFloat(removeCommas($("#payment_total_before").val()));
+                                var total = 0;
+
+                                if(voucher_type ==1){ //Voucher
+                                    $("#voucher_nominal").val(addCommas(voucher_value));
+                                    total = grand_total - voucher_price;    
+                                    if(parseInt(r.voucher_minimum_transaction) > 0){
+                                        if(grand_total < voucher_minimum){
+                                            lack_total = voucher_minimum - grand_total;
+
+                                            let title   = '<span class="fas fa-times"></span> Voucher Gagal';
+                                            let content = 'Transaksi belum memenuhi syarat untuk menggunakan voucher ini.<br><br>';
+                                                content += 'Grand Total Saat Ini : <b>'+addCommas(grand_total)+'</b><br>'; 
+                                                content += 'Minimum Transaksi : <b>'+addCommas(voucher_minimum)+'</b><br>';
+                                                content += 'Transaksi Kurang : <b>'+addCommas(lack_total)+'</b>';
+                                            $.confirm({
+                                                title: title, content:content, columnClass: 'col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1',  
+                                                // autoClose: 'button_1|20000',
+                                                closeIcon: true, closeIconClass: 'fas fa-times',
+                                                animation:'zoom', closeAnimation:'bottom', animateFromElement:false, useBootstrap:true,
+                                                buttons: {
+                                                    button_1: {
+                                                        text: 'Tutup',
+                                                        btnClass: 'btn-danger',
+                                                        keys: ['Escape'],
+                                                        action: function(){
+                                                        }
+                                                    }
+                                                }
+                                            });
+
+                                            next=false;
+                                        }
+                                    }
+                                }else if(voucher_type ==2){ //Promo
+                                    $("#voucher_nominal").val(voucher_value+'%');
+                                    if(voucher_value == 100){
+                                        total_percent = grand_total;
+                                        total = grand_total - total_percent;
+                                    }else{
+                                        // total_percent = grand_total / voucher_value; //195000 / 50
+                                        total_percent = grand_total * (voucher_value / 100); //195000 / 50                                        
+                                        total = grand_total - total_percent;                                        
+                                    }
+                                    console.log(total_percent+', '+total);
+                                    $("#voucher_nominal").val(addCommas(total_percent));                                    
+                                }             
+
+                                if(next){    
+                                    notif(1,'Total Tagihan berhasil dirubah dari '+addCommas(grand_total)+' menjadi '+addCommas(total));
+                                    $("#btn_voucher_search").html('<span class="fas fa-trash"></span> Hapus Voucher');   
+                                    $("#btn_voucher_search").attr('data-id',4);                                                                         
+                                    $("#payment_total").val(total);
+                                    modal_total = total;
+                                }else{
+                                    voucherReset(1);
+                                }
+                            }
+                        },
+                        button_2: {
+                            text: '<span class="fas fa-times"></span> Batal',
+                            btnClass: 'btn-danger',
+                            keys: ['Escape'],
+                            action: function(){
+                                voucherReset(1);
+                            }
+                        }                                
+                    }
+                });                
+            }else if (voucher_status==4){
+                var r = params;
+                let title   = 'Voucher / Promo '+r.voucher_status;
+                let content = '<b>'+r.voucher_type_name+'</b> dengan kode <b>'+r.voucher_code+'</b> telah <b>'+r.voucher_status+'</b> hanya berlaku di periode <b>'+r.voucher_period+'</b>';
+                $.confirm({
+                    title: title,
+                    content: content,
+                    columnClass: 'col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1',  
+                    autoClose: 'button_1|30000',
+                    closeIcon: true, closeIconClass: 'fas fa-times',
+                    animation:'zoom', closeAnimation:'bottom', animateFromElement:false, useBootstrap:true,
+                    buttons: {
+                        button_1: {
+                            text: '<span class="fas fa-times"></span> Tutup',
+                            btnClass: 'btn-danger',
+                            keys: ['Escape'],
+                            action: function(){
+                                $("#btn_voucher_search").html('<span class="fas fa-check-double"></span> Gunakan');   
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        function voucherReset(action){
+            console.log('voucherReset('+action+')');
+            if(action == 0){
+                // $("#modal-payment-voucher").val('');
+                $("#voucher_nominal").val('');
+                $("#voucher_nominal").attr('data-id',0);     
+                $("#btn_voucher_search").attr('data-id',1);        
+                $("#btn_voucher_search").html('<span class="fas fa-check-double"></span> Gunakan');
+            }else if(action == 1){
+                $("#modal-payment-voucher").val('');
+                $("#voucher_nominal").val('');
+                $("#voucher_nominal").attr('data-id',0);            
+                $("#btn_voucher_search").attr('data-id',1);     
+                $("#btn_voucher_search").html('<span class="fas fa-check-double"></span> Gunakan');
+            }else if(action == 4){            
+                var grand_total = $("#payment_total_before").val();
+                $("#modal-payment-voucher").val('');
+                $("#voucher_nominal").val('');
+                $("#voucher_nominal").attr('data-id',0);    
+                $("#btn_voucher_search").attr('data-id',1);     
+                $("#btn_voucher_search").attr('data-voucher-id',0);                                
+                $("#btn_voucher_search").html('<span class="fas fa-check-double"></span> Gunakan');
+                $("#payment_total").val(addCommas(grand_total));
+                modal_total = removeCommas(grand_total);
+                notif(1,'Total Tagihan berhasil dikembalikan '+addCommas(grand_total));
+            }
+        }
 
         function loadRoom(params) { /* load-reference */
             if(params['search']){
@@ -2516,6 +2756,12 @@
             $("#payment_total").val(0);
             $("#payment_received").val(0);
             $("#payment_change").val(0);    
+
+            $("#btn_voucher_search").attr('data-voucher-id',0);     
+            $("#voucher_code").val('');
+            $("#voucher_nominal").val('');
+            transTotal = 0;
+            transItemTotal = 0;                 
         }
         function formTransSetDisplay(value){ // 1 = Untuk Enable/ ditampilkan, 0 = Disabled/ disembunyikan
             if(value == 1){ var flag = true; }else{ var flag = false; }

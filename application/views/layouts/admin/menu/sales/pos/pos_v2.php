@@ -784,7 +784,7 @@
                                             <i class="fas fa-bars"></i>&nbsp;&nbsp;Menu&nbsp;&nbsp;<span class="fa fa-angle-down"></span> 
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <li><a href="#" class="btn_menu_toggle" data-id="3"><span class="fas fa-shopping-cart"></span>&nbsp;Data <?php echo $order_alias; ?></a></li>
+                                            <!-- <li><a href="#" class="btn_menu_toggle" data-id="3"><span class="fas fa-shopping-cart"></span>&nbsp;Data <?php #echo $order_alias; ?></a></li> -->
                                             <li><a href="#" class="btn_menu_toggle" data-id="4"><span class="fas fa-cash-register"></span>&nbsp;Data <?php echo $payment_alias; ?></a></li>
                                             <!-- <li><a href="#" class="btn_menu_toggle" data-id="3"><span class="fas fa-list-alt"></span>&nbsp;Antrian Pembayaran</a></li>                                             -->
                                         </ul>
@@ -1566,7 +1566,7 @@
                                                 <div class="col-md-12 col-xs-12 col-sm-12 padding-remove-side">
                                                     <div class="col-lg-12 col-md-6 col-sm-6 col-xs-6 padding-remove-side prs-0">
                                                         <div class="form-group">
-                                                            <label class="form-label">Grand Total</label>
+                                                            <label class="form-label">Total</label>
                                                             <input id="payment_total_before" name="payment_total_before" type="text" value="" class="form-control" readonly='true'/>
                                                         </div>
                                                     </div>
@@ -1579,17 +1579,16 @@
                                                             </button>
                                                         </div>                   
                                                     </div> -->
-                                                    <!-- 
                                                     <div class="col-md-4 col-sm-4 col-xs-12 padding-remove-side prs-0">
                                                         <div class="form-group">
-                                                            <label class="form-label">Klaim Voucher / Promo</label>
+                                                            <label class="form-label">Klaim (Voucher / Promo / Diskon)</label>
                                                             <input id="voucher_code" name="voucher_code" type="text" value="" class="form-control" style=""/>
                                                         </div>                   
                                                     </div>
                                                     <div class="col-md-4 col-sm-4 col-xs-12 padding-remove-side prs-0">
                                                         <div class="form-group">
                                                             <label class="form-label">&nbsp;</label>
-                                                            <button id="btn_voucher_search" data-id="1" type="button" class="form-control btn btn-mini" style="">
+                                                            <button id="btn_voucher_search" data-id="1" data-voucher-id="0" type="button" class="form-control btn btn-mini">
                                                                 <span class="fas fa-check-double"></span> Gunakan
                                                             </button>
                                                         </div>                   
@@ -1600,11 +1599,10 @@
                                                             <input id="voucher_nominal" name="voucher_nominal" type="text" value="" class="form-control" readonly='true'/>
                                                         </div>
                                                     </div>
-                                                    <div class="clearfix"></div>
-                                                    -->    
+                                                    <div class="clearfix"></div>                                                    
                                                     <div class="col-md-4 col-sm-6 col-xs-6 padding-remove-side prs-0">
                                                         <div class="form-group">
-                                                            <label class="form-label">Total Tagihan</label>
+                                                            <label class="form-label">Grand Total</label>
                                                             <input id="payment_total" name="payment_total" type="text" value="" class="form-control" readonly='true'/>
                                                         </div>
                                                     </div>

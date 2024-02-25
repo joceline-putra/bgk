@@ -30,7 +30,7 @@ class Pos2 extends MY_Controller{
         $this->load->model('Account_map_model'); 
         $this->load->model('Referensi_model');         
 
-        $this->print_to         = 0; //0 = Local, 1 = Bluetooth
+        $this->print_to         = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? 1 : 0); //0 = Local, 1 = Bluetooth
         $this->whatsapp_config  = 1;          
 
         $this->contact_1_alias  = 'Customer';
@@ -973,6 +973,9 @@ class Pos2 extends MY_Controller{
                         $sales_id               = !empty($datas['sales_id']) ? $datas['sales_id'] : null;                                                
                         $payment_method         = !empty($datas['payment_method']) ? intval($datas['payment_method']) : 0;
                         
+                        $voucher_id             = !empty($datas['voucher_id']) ? $datas['voucher_id'] : 0;
+                        $voucher_nominal        = !empty($datas['voucher_nominal']) ? $datas['voucher_nominal'] : 0;                        
+                                  
                         $document_session     = $this->random_code(20);
                         $document_number      = $this->request_number_for_transaction(2);
                         $journal_number       = $this->request_number_for_journal(2);
@@ -1055,6 +1058,13 @@ class Pos2 extends MY_Controller{
                             $get_paid_type = $this->Type_paid_model->get_type_paid($payment_method);
                             $paid_type_name = $get_paid_type['paid_name'];
                         }
+
+                        //Voucher Detected
+                        if(intval($voucher_id) > 0){
+                            $params['trans_voucher_id'] = intval($voucher_id);
+                            $params['trans_voucher'] = $voucher_nominal;
+                        }
+                                                       
                         //Check Data Exist
                         /*
                             $params_check = array(
@@ -1133,6 +1143,7 @@ class Pos2 extends MY_Controller{
                                     $set_journal=$this->Journal_model->add_journal($params_journal);
 
                                     if($set_journal){
+
                                         // Kas / Transfer / EDC / QRIS (DEBIT)
                                         $params_items_debit = array(
                                             'journal_item_journal_id' => $set_journal,
@@ -1151,7 +1162,30 @@ class Pos2 extends MY_Controller{
                                             'journal_item_ref' => $this->random_code(8)
                                         );
                                         $this->Journal_model->add_journal_item($params_items_debit);
-                                    
+                                        
+                                        //Detect have Voucher
+                                        if(floatval($get_document['trans_voucher']) > 0){
+                                            $account_voucher = $this->get_account_map_for_transaction($session_branch_id,2,9); //Voucher Penjualan
+                                            // Discount Debit
+                                            $params_items_voucher = array(
+                                                'journal_item_journal_id' => $set_journal,
+                                                'journal_item_branch_id' => $get_document['trans_branch_id'],  
+                                                // 'journal_item_trans_id' => $i['trans_id'],
+                                                'journal_item_trans_id' => $set_data,
+                                                'journal_item_account_id' => $account_voucher['account_id'],
+                                                'journal_item_type' => 11,   
+                                                'journal_item_date' => $document_date,
+                                                'journal_item_debit' => floatVal($get_document['trans_voucher']),
+                                                'journal_item_credit' => '0.00',
+                                                'journal_item_date_created' => date("YmdHis"),
+                                                'journal_item_date_updated' => date("YmdHis"),
+                                                'journal_item_user_id' => $session_user_id,
+                                                'journal_item_flag' => 1,
+                                                'journal_item_position' => 1
+                                            );
+                                            $this->Journal_model->add_journal_item($params_items_voucher);                                                        
+                                        }
+                                                                                     
                                         // Penjualan / Pendapatan (Produk, Jasa) (CREDIT)
                                         $params_items = array(
                                             'trans_item_trans_id' => $get_document['trans_id']
@@ -2007,7 +2041,7 @@ class Pos2 extends MY_Controller{
 
             // $text .= "\n";
             $text .= dot_set_line('-',$word_wrap_width);
-            $text .= dot_set_wrap_3('Subtotal',':',number_format($get_trans['trans_total_dpp'],0,'',','));
+            $text .= dot_set_wrap_3('Total',':',number_format($get_trans['trans_total_dpp'],0,'',','));
             if(!empty($get_trans['trans_voucher']) && $get_trans['trans_voucher'] > 0){
                 $text .= dot_set_wrap_3('Voucher',':','-'.number_format($get_trans['trans_voucher'],0,'',','));    
             }
@@ -2017,6 +2051,7 @@ class Pos2 extends MY_Controller{
             if((!empty($get_trans['trans_voucher'])) or (!empty($get_trans['trans_discount']))){
                 $text .= dot_set_wrap_3('Grand Total',':',number_format($get_trans['trans_total'],0,'',','));    
             }            
+            $text .= dot_set_line('-',$word_wrap_width);            
             $text .= dot_set_wrap_3('Dibayar',':',number_format($get_trans['trans_received'],0,'',','));
             if(!empty($get_trans['trans_change']) && $get_trans['trans_change'] > 0){
                 $text .= dot_set_wrap_3('Kembali',':',number_format($get_trans['trans_change'],0,'',','));

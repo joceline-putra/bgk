@@ -186,8 +186,8 @@ $next = true;
                 <li class="start open">
                     <ul class="open sub-menu" style="display:block;">
                         <!-- <li><a href="<?php #echo site_url('sales/pos')?>">POS</a></li> -->
-                        <!-- <li><a href="<?php #echo site_url('sales/pos2')?>">POS 2</a></li> -->
-                        <li><a href="<?php echo site_url('sales/pos3')?>">POS 3</a></li>
+                        <li><a href="<?php echo site_url('sales/pos2')?>">POS 2</a></li>
+                        <!-- <li><a href="<?php #echo site_url('sales/pos3')?>">POS 3</a></li> -->
                     </ul>
                 </li>
             </li>

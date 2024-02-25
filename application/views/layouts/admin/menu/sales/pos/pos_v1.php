@@ -383,7 +383,9 @@
             padding-top: 12px!important;
             padding-bottom: 0px!important;
         }     
-
+        .dataTables_info, .dataTables_paginate, .paginate_button {
+            color: var(--form-font-color)!important;
+        }
     /* Large desktops and laptops */
     @media (min-width: 1200px) {
         /* .prs-0{
@@ -578,19 +580,19 @@
         <ul class="nav nav-tabs" role="tablist" style="display:inline;">
             <li class="active">
                 <a href="#tab1" role="tab" class="btn-tab-1" data-toggle="tab" aria-expanded="true">
-                    <span class="fas fa-clipboard"></span> <?php echo $ref_alias; ?></a> <!-- Order -->
+                    <span class="fas fa-clipboard"></span> 1.<?php echo $ref_alias; ?></a> <!-- Order -->
             </li> 
             <li class="">
                 <a href="#tab3" role="tab" class="btn-tab-3" data-toggle="tab" aria-expanded="false"  style="cursor:pointer;">
-                    <span class="fas fa-shopping-cart"></span> <?php echo $order_alias; ?></a> <!-- Payment -->
+                    <span class="fas fa-shopping-cart"></span> 3.<?php echo $order_alias; ?></a> <!-- Payment -->
             </li>  
             <li class="">
                 <a href="#tab2" role="tab" class="btn-tab-2" data-toggle="tab" aria-expanded="false"  style="cursor:pointer;">
-                    <span class="fas fa-cash-register"></span> <?php echo $payment_alias; ?></a> <!-- Payment -->
+                    <span class="fas fa-cash-register"></span> 2.<?php echo $payment_alias; ?></a> <!-- Payment -->
             </li>                                                             
         </ul>
         <!-- <div class="tab-content" style="border-radius:24px;"> -->
-        <div class="tab-content">
+        <div class="tab-content" style="border: 8px solid var(--form-background-color);">
             <div class="tab-pane active" id="tab1">
                 <div class="row div_mobile">                    
                     <div class="col-md-12 col-xs-12 col-sm-12 padding-remove-side">
@@ -611,7 +613,7 @@
                             </div> 
                             <div class="col-md-4 col-sm-4 col-xs-4 padding-remove-side">
                                 <div class="col-md-12 col-xs-12 col-sm-12" style="padding-left: 0;padding-right:0;margin-top:0px;">
-                                    <h5 style="text-align:center;margin-top:6px;"><b><?php echo $ref_alias; ?></b></h5>
+                                    <h5 style="text-align:center;margin-top:6px;font-size:large;"><b><?php echo $ref_alias; ?></b></h5>
                                 </div>
                             </div>
                             <div class="col-md-4 col-sm-4 col-xs-4 padding-remove-right">
@@ -644,9 +646,9 @@
                                 <div class="grid-body" style="padding:0px;">
                                     <!-- <div class="col-md-12 col-xs-12 col-sm-12" style="margin-top:8px!important;margin-bottom:0px!important;padding-left:10px;">                                      
                                     </div>                         -->
-                                    <div class="col-md-12 col-xs-12 col-sm-12 padding-remove-side">
-                                        <div id="room-tab" class="tabbable tabs-left room-tab">
-                                            <div class="tab-content">
+                                    <div class="col-md-12 col-xs-12 col-sm-12 padding-remove-side" style="background-color:var(--form-background-color);">
+                                        <!-- <div id="room-tab" class="tabbable tabs-left room-tab"> -->
+                                            <div class="tab-content" style="background-color:var(--form-background-color);">
                                                 <div class="tab-pane active" style="padding-top:0px;padding-bottom:0px;">
                                                     <div class="row">
                                                         <div id="room-tab-detail" class="col-md-12 col-xs-12 col-sm-12 scroll-track scroll-order-room">
@@ -654,7 +656,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        <!-- </div> -->
                                     </div>
                                 </div>
                             </div>
@@ -677,7 +679,7 @@
                             </div> 
                             <div class="col-md-4 col-sm-4 col-xs-4 padding-remove-side">
                                 <div class="col-md-12 col-xs-12 col-sm-12" style="padding-left: 0;padding-right:0;margin-top:0px;">
-                                    <h5 style="text-align:center;margin-top:0px;"><b>Data <br><?php echo $payment_alias; ?></b></h5>
+                                    <h5 style="text-align:center;margin-top:0px;font-size:large;""><b>Data <br><?php echo $payment_alias; ?></b></h5>
                                 </div>
                             </div>
                             <div class="col-md-4 col-sm-4 col-xs-4 padding-remove-right">
@@ -700,12 +702,12 @@
                 </div>
                 <div id="div_payment_data" class="col-md-12 col-xs-12 col-sm-12 padding-remove-side">
                     <div class="grid simple">
-                        <div class="grid-body">                    
+                        <div class="grid-body" style="background-color:var(--form-background-color);">                    
                             <div class="row">
                                 <div class="col-md-12 col-xs-12 col-sm-12 padding-remove-side" style="padding-top:8px;">
                                     <div class="col-md-6 col-xs-12 col-sm-12 padding-remove-side">
                                         <div class="col-lg-3 col-md-3 col-xs-6 col-sm-6 form-group padding-remove-right prs-5">
-                                            <label class="form-label">Periode Awal</label>
+                                            <label class="form-label" style="margin-bottom:0px;color:var(--form-font-color);">Periode Awal</label>
                                             <div class="col-md-12 col-sm-12 padding-remove-side">
                                                 <div class="input-append success date col-md-12 col-lg-12 no-padding">
                                                     <input name="start_2" id="start_2" type="text" class="form-control input-sm" readonly="true"
@@ -715,7 +717,7 @@
                                             </div>
                                         </div>
                                         <div class="col-lg-3 col-md-3 col-xs-6 col-sm-6 form-group padding-remove-right prs-5">
-                                            <label class="form-label">Periode Akhir</label>
+                                            <label class="form-label" style="margin-bottom:0px;color:var(--form-font-color);">Periode Akhir</label>
                                             <div class="col-md-12 col-sm-12 padding-remove-side">
                                                 <div class="input-append success date col-md-12 col-lg-12 no-padding">
                                                     <input name="end_2" id="end_2" type="text" class="form-control input-sm" readonly="true"
@@ -726,7 +728,7 @@
                                         </div>
                                         <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12 form-group padding-remove-right prs-5">
                                             <div class="col-md-12 col-xs-12 col-sm-12 padding-remove-side">
-                                                <label class="form-label"><?php echo $contact_1_alias; ?></label>
+                                                <label class="form-label" style="margin-bottom:0px;color:var(--form-font-color);"><?php echo $contact_1_alias; ?></label>
                                                 <select id="filter_kontak_2" name="filter_kontak_2" class="form-control">
                                                     <option value="0">-- Semua --</option>
                                                 </select>
@@ -736,7 +738,7 @@
                                     <div class="col-md-6 col-xs-12 col-sm-12 padding-remove-side">
                                         <div class="col-lg-3 col-md-3 col-xs-12 col-sm-12 form-group padding-remove-right prs-5">
                                             <div class="col-md-12 col-xs-12 col-sm-12 padding-remove-side">
-                                                <label class="form-label">Metode Bayar</label>
+                                                <label class="form-label" style="margin-bottom:0px;color:var(--form-font-color);">Metode Bayar</label>
                                                 <select id="filter_type_paid_2" name="filter_type_paid_2" class="form-control">
                                                     <option value="0">-- Semua --</option>
                                                     <?php 
@@ -749,13 +751,13 @@
                                         </div>                                                        
                                         <div class="col-lg-5 col-md-5 col-xs-6 col-sm-6 form-group padding-remove-right prs-0 prs-5">
                                             <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 form-group padding-remove-side">
-                                                <label class="form-label">Cari</label>
+                                                <label class="form-label" style="margin-bottom:0px;color:var(--form-font-color);">Cari</label>
                                                 <input id="filter_search_2" name="filter_search_2" type="text" value="" class="form-control" placeholder="Pencarian" />
                                             </div>
                                         </div>                                 
                                         <div class="col-lg-4 col-md-4 col-xs-6 col-sm-6 form-group prs-0 prs-0 prs-5">
                                             <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 form-group padding-remove-side">                                        
-                                                <label class="form-label">Tampil</label>
+                                                <label class="form-label" style="margin-bottom:0px;color:var(--form-font-color);">Tampil</label>
                                                 <select id="filter_length_2" name="filter_length_2" class="form-control">
                                                     <option value="10">10 Baris</option>
                                                     <option value="25">25 Baris</option>
@@ -766,7 +768,7 @@
                                         </div>   
                                     </div>                
                                 </div>  
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 prs-5">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <div class="table-responsive">
                                         <table id="table_data_trans" class="table table-bordered" data-limit-start="0" data-limit-end="10" style="width:100%;">
                                         </table>
@@ -791,7 +793,7 @@
                             </div> 
                             <div class="col-md-4 col-sm-4 col-xs-4 padding-remove-side">
                                 <div class="col-md-12 col-xs-12 col-sm-12" style="padding-left: 0;padding-right:0px;margin-top:0px;">
-                                    <h5 style="text-align: center;margin-top:0px;"><b>Data <br><?php echo $order_alias; ?></b></h5>
+                                    <h5 style="text-align: center;margin-top:0px;font-size:large;"><b>Data <br><?php echo $order_alias; ?></b></h5>
                                 </div>
                             </div>
                             <div class="col-md-4 col-sm-4 col-xs-4 padding-remove-right">
@@ -812,11 +814,11 @@
                 </div>
                 <div id="div_order_data" class="col-md-12 col-xs-12 col-sm-12 padding-remove-side">
                     <div class="grid simple">
-                        <div class="grid-body">                    
+                        <div class="grid-body" style="background-color:var(--form-background-color);">                    
                             <div class="row">
                                 <div class="col-md-12 col-xs-12 col-sm-12 padding-remove-side" style="padding-top:8px;">
                                     <div class="col-lg-2 col-md-2 col-xs-6 col-sm-6 form-group padding-remove-right prs-5">
-                                        <label class="form-label">Periode Awal</label>
+                                        <label class="form-label" style="margin-bottom:0px;color:var(--form-font-color);">Periode Awal</label>
                                         <div class="col-md-12 col-sm-12 padding-remove-side">
                                             <div class="input-append success date col-md-12 col-lg-12 no-padding">
                                                 <input name="start" id="start" type="text" class="form-control input-sm" readonly="true"
@@ -826,7 +828,7 @@
                                         </div>
                                     </div>
                                     <div class="col-lg-2 col-md-2 col-xs-6 col-sm-6 form-group padding-remove-right prs-5">
-                                        <label class="form-label">Periode Akhir</label>
+                                        <label class="form-label" style="margin-bottom:0px;color:var(--form-font-color);">Periode Akhir</label>
                                         <div class="col-md-12 col-sm-12 padding-remove-side">
                                             <div class="input-append success date col-md-12 col-lg-12 no-padding">
                                                 <input name="end" id="end" type="text" class="form-control input-sm" readonly="true"
@@ -837,7 +839,7 @@
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-xs-12 col-sm-12 form-group padding-remove-right prs-5">
                                         <div class="col-md-12 col-xs-12 col-sm-12 padding-remove-side">
-                                            <label class="form-label"><?php echo $contact_1_alias; ?></label>
+                                            <label class="form-label" style="margin-bottom:0px;color:var(--form-font-color);"><?php echo $contact_1_alias; ?></label>
                                             <select id="filter_kontak" name="filter_kontak" class="form-control">
                                                 <option value="0">-- Semua --</option>
                                             </select>
@@ -845,13 +847,13 @@
                                     </div>                    
                                     <div class="col-lg-3 col-md-3 col-xs-6 col-sm-6 form-group padding-remove-right prs-0 prs-5">
                                         <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 form-group padding-remove-side">
-                                            <label class="form-label">Cari</label>
+                                            <label class="form-label" style="margin-bottom:0px;color:var(--form-font-color);">Cari</label>
                                             <input id="filter_search" name="filter_search" type="text" value="" class="form-control" placeholder="Pencarian" />
                                         </div>
                                     </div>                                 
                                     <div class="col-lg-2 col-md-2 col-xs-6 col-sm-6 form-group prs-0 prs-0 prs-5">
                                         <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 form-group padding-remove-side">                                        
-                                            <label class="form-label">Tampil</label>
+                                            <label class="form-label" style="margin-bottom:0px;color:var(--form-font-color);">Tampil</label>
                                             <select id="filter_length" name="filter_length" class="form-control">
                                                 <option value="10">10 Baris</option>
                                                 <option value="25">25 Baris</option>
@@ -861,7 +863,7 @@
                                         </div>
                                     </div>                   
                                 </div>  
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 prs-5">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <div class="table-responsive">
                                         <table id="table_data_order" class="table table-bordered" data-limit-start="0" data-limit-end="10" style="width:100%;">
                                         </table>
@@ -884,7 +886,7 @@
 
 <!-- Order -->
 <div class="modal fade" id="modal-order" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-order modal-dialog modal-lg" style="">
+    <div class="modal-order modal-dialog modal-lg">
         <div class="modal-content">
             <form id="form-trans" name="form-trans" method="" action="">         
                 <div class="modal-header modal-header-order">
@@ -1173,9 +1175,9 @@
 <div class="modal fade" id="modal-payment-list" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header modal-header-order">
                 <h4 id="modal-payment-order-ref" style="text-align:left;">Daftar <?php echo $order_alias; ?> Anda</h4>
-                <b id="modal-payment-order-date">-</b>
+                <h5 id="modal-payment-order-date" style="text-align:left;font-size:12px;font-weight:600;    ">-</h5>
                 <button class="btn btn-outline-danger waves-effect" type="button" data-dismiss="modal" style="position:relative;top:-38px;float:right;">
                     <i class="fas fa-times"></i>                                 
                     Tutup
@@ -1213,7 +1215,7 @@
                         <a class="btn-move-room-order btn btn-primary" href="#" data-order-id="0" data-order-number="0" data-ref-id="0" data-ref-name="0" data-dismiss="modal" style="width:45%;">
                             <i class="fas fa-arrow-right"></i> Pindah <?php echo $ref_alias; ?>
                         </a>
-                        <a id="btn-addon-order" href="#" class="btn btn-primary btn-small" data-order-id="0" data-order-number="0" data-ref-name="0" data-dismiss="modal" style="width:45%;">
+                        <a id="btn-addon-order" href="#" class="btn btn-primary" data-order-id="0" data-order-number="0" data-ref-name="0" data-dismiss="modal" style="width:45%;">
                             <i class="fas fa-plus"></i> Tambah Produk
                         </a>
                     </div>
@@ -1229,9 +1231,9 @@
                         <a class="btn-cancel-order btn btn-danger" href="#" data-order-id="0" data-order-number="0" data-ref-id="0" data-ref-name="0" data-dismiss="modal" style="width:45%;">
                             <i class="fas fa-ban"></i> Batal <?php echo $order_alias; ?>
                         </a>                
-                        <a type="button" class="btn btn-outline-danger waves-effect" data-dismiss="modal" style="width:45%;">
+                        <!-- <a type="button" class="btn btn-outline-danger waves-effect" data-dismiss="modal" style="width:45%;">
                             <span class="fas fa-times"></span> Tutup
-                        </a>
+                        </a> -->
                     </div>
                 </div>
             </div>
@@ -1244,8 +1246,8 @@
     <div class="modal-order modal-dialog modal-lg">
         <div class="modal-content">
             <form id="form-payment" name="form-payment" method="" action="">         
-                <div class="modal-header">
-                    <h4 id="modal_booking_title" style="text-align:left;">Daftar <?php echo $payment_alias;?></h4>
+                <div class="modal-header modal-header-order">
+                    <h4 id="modal_booking_title" style="text-align:left;">Menunggu Pembayaran</h4>
                     <button class="btn btn-outline-danger waves-effect" type="button" data-dismiss="modal"
                         style="position:relative;top:-38px;float:right;">
                         <i class="fas fa-times"></i>                                 
@@ -1254,7 +1256,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-12 col-sm-12 col-xs-12 prs-0">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
                             <div class="col-md-12 col-sm-12 col-xs-12 padding-remove-side prs-0">
                                 <div class="grid simple">
                                     <div class="hidden grid-title">
@@ -1589,7 +1591,7 @@
                                                                 <div class="col-md-12 col-xs-12 col-sm-12 padding-remove-side">
                                                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 padding-remove-side prs-0">
                                                                         <div class="form-group">
-                                                                            <label class="form-label">Grand Total</label>
+                                                                            <label class="form-label">Total</label>
                                                                             <input id="method-payment-total-before" name="method-payment-total-before" type="text" value="" class="form-control" readonly='true'/>
                                                                         </div>
                                                                     </div>
@@ -1625,7 +1627,7 @@
                                                                     <div class="clearfix"></div>
                                                                     <div class="col-md-4 col-sm-12 col-xs-12 padding-remove-side prs-0">
                                                                         <div class="form-group">
-                                                                            <label class="form-label">Total Tagihan</label>
+                                                                            <label class="form-label">Grand Total</label>
                                                                             <input id="method-payment-total" name="method-payment-total" type="text" value="" class="form-control" readonly='true'/>
                                                                         </div>
                                                                     </div>

@@ -29,7 +29,7 @@ class Pos3 extends MY_Controller{
         $this->load->model('Account_map_model'); 
         $this->load->model('Referensi_model');         
 
-        $this->print_to         = 0; //0 = Local, 1 = Bluetooth
+        $this->print_to         = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? 1 : 0); //0 = Local, 1 = Bluetooth
         $this->whatsapp_config  = 1;          
 
         $this->contact_1_alias  = 'Customer';
