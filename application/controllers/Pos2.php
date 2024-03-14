@@ -1639,7 +1639,7 @@ class Pos2 extends MY_Controller{
         $return->message = '';
         $return->result  = '';
         $params = array(
-            'product_type' => 1
+            'product_flag' => 1
         );
         $get_all_product = $this->Produk_model->get_all_produks($params,null,null,null,'product_name','asc');
         $datas = array();
