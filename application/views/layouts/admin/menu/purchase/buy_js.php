@@ -159,16 +159,16 @@
                 [0, 'asc']
             ],
             "columns": [{
-                    'data': 'trans_date_format',
+                    'data': 'trans_date',
                     render: function (data, meta, row) {
                         var dsp = '';
-                        dsp += data;
-                        if (row.trans_label == undefined) {
-                            // dsp += '<br><button class="btn-tag btn btn-mini btn-default" data-trans-id="'+row.trans_id+'">';
-                            // dsp += '<span class="fas fa-undo"></span> Label';
-                            // dsp += '</button>';
-                            dsp += '<br><span class="label btn-label" style="cursor:pointer;color:white;background-color:#929ba1;padding:1px 4px;" data-trans-id="' + row.trans_id + '">Label</span>';
-                        } else {
+                        dsp += data+'<br>';
+                        // if (row.trans_label == undefined) {
+                        //     // dsp += '<br><button class="btn-tag btn btn-mini btn-default" data-trans-id="'+row.trans_id+'">';
+                        //     // dsp += '<span class="fas fa-undo"></span> Label';
+                        //     // dsp += '</button>';
+                        //     dsp += '<br><span class="label btn-label" style="cursor:pointer;color:white;background-color:#929ba1;padding:1px 4px;" data-trans-id="' + row.trans_id + '">Label</span>';
+                        // } else {
 
                             // dsp += '            <option value="Tercetak">Tercetak</option>';
                             // dsp += '            <option value="Penting">Penting</option>';
@@ -176,37 +176,39 @@
                             // dsp += '            <option value="Belum Dikirim">Belum Dikirim</option>';
                             // dsp += '            <option value="Label">Label</option>';
 
-                            var bgcolor = '#929ba1';
-                            var color = 'white';
-                            var icon = '';
+                        //     var bgcolor = '#929ba1';
+                        //     var color = 'white';
+                        //     var icon = '';
 
-                            if (row.trans_label !== undefined) {
-                                icon = row.label_icon;
-                                bgcolor = row.label_background;
-                                color = row.label_color;
-                            }
+                        //     if (row.trans_label !== undefined) {
+                        //         icon = row.label_icon;
+                        //         bgcolor = row.label_background;
+                        //         color = row.label_color;
+                        //     }
 
-                            dsp += '<br><span class="label btn-label" data-trans-id="' + row.trans_id + '" style="cursor:pointer;color:' + color + ';background-color:' + bgcolor + ';padding:1px 4px;">';
-                            dsp += '<span class="' + icon + '">&nbsp;';
-                            dsp += row.trans_label;
-                            dsp += '</span>';
-                            dsp += '</span>';
-                        }
-                        return dsp;
-                    }
-                }, {
-                    'data': 'trans_number',
-                    render: function (data, meta, row) {
-                        var dsp = '';
-                        dsp += '<a class="btn-edit" data-id="' + row.trans_id + '" style="cursor:pointer;">';
+                        //     dsp += '<br><span class="label btn-label" data-trans-id="' + row.trans_id + '" style="cursor:pointer;color:' + color + ';background-color:' + bgcolor + ';padding:1px 4px;">';
+                        //     dsp += '<span class="' + icon + '">&nbsp;';
+                        //     dsp += row.trans_label;
+                        //     dsp += '</span>';
+                        //     dsp += '</span>';
+                        // }
+                        dsp += '&nbsp;<a class="btn-edit" data-id="' + row.trans_id + '" style="cursor:pointer;">';
                         dsp += '<span class="fas fa-file-alt"></span>&nbsp;' + row.trans_number;
                         dsp += '</a>';
                         if (row.trans_ref_number != undefined) {
                             dsp += '<br>' + row.trans_ref_number;
-                        }
-                        // if(row.trans_note != undefined){
-                        //   dsp += '<br>'+row.trans_note;
-                        // }
+                        }                               
+                        return dsp;
+                    }
+                }, {
+                    'data': 'trans_note',
+                    render: function (data, meta, row) {
+                        var dsp = '';
+                        if(data == undefined){
+
+                        }else{ 
+                            dsp += data;                             
+                        }    
                         return dsp;
                     }
                 }, {

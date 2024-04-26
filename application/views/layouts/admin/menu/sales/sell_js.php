@@ -243,18 +243,23 @@
                             dsp += '</span>';
                             dsp += '</span>';
                         }
-                        return dsp;
-                    }
-                }, {
-                    'data': 'trans_number',
-                    render: function (data, meta, row) {
-                        var dsp = '';
-                        dsp += '<a class="btn-edit" data-id="' + row.trans_id + '" style="cursor:pointer;">';
+                        dsp += '&nbsp;<a class="btn-edit" data-id="' + row.trans_id + '" style="cursor:pointer;">';
                         dsp += '<span class="fas fa-file-alt"></span>&nbsp;' + row.trans_number;
                         dsp += '</a>';
                         if (row.trans_ref_number != undefined) {
                             dsp += '<br>' + row.trans_ref_number;
-                        }
+                        }                        
+                        return dsp;
+                    }
+                }, {
+                    'data': 'trans_note',
+                    render: function (data, meta, row) {
+                        var dsp = '';
+                        if(data == undefined){
+
+                        }else{ 
+                            dsp += data;                             
+                        }    
                         return dsp;
                     }
                 }, {
@@ -267,10 +272,9 @@
                         if(row.contact_category_id != undefined){ 
                             dsp += '<br><span class="label btn-label label-inverse" style="padding:1px 4px;">' + row.category_name + '</span>';                             
                         }
-                        if(row.trans_note == undefined){
-                        }else{ 
-                            dsp += '<br><span class="label btn-label" style="padding:1px 4px;">' + row.trans_note + '</span>';                             
-                        }                        
+                        // if(row.trans_sales_id != undefined){ 
+                        //     dsp += '<br><span class="label btn-label" style="padding:1px 4px;">' + row.trans_sales_name + '</span>';                             
+                        // }                        
                         return dsp;
                     }
                 }, {

@@ -553,6 +553,11 @@ class Transaksi extends MY_Controller{
             /* CRUD orders */
             switch($action){
                 case "load":
+                    $columns = array(
+                        '0' => 'trans_number',
+                        '1' => 'trans_note',
+                        '2' => 'contact_name',
+                    );                          
                     $limit      = $this->input->post('length');
                     $start      = $this->input->post('start');
                     $order      = $columns[$this->input->post('order')[0]['column']];

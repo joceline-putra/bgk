@@ -715,7 +715,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>Tanggal</th>
-                                                    <th>Nomor</th>
+                                                    <th>Keterangan</th>
                                                     <th>Customer</th>
                                                     <th>Tagihan</th>
                                                     <th>Sisa Tagihan</th>

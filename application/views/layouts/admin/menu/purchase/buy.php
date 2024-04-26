@@ -584,7 +584,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>Tanggal</th>
-                                                    <th>Nomor</th>
+                                                    <th>Keterangan</th>
                                                     <th>Supplier</th>
                                                     <th>Tagihan</th>
                                                     <th>Sisa Tagihan</th>
