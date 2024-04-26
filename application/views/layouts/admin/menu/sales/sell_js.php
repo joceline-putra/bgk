@@ -267,9 +267,10 @@
                         if(row.contact_category_id != undefined){ 
                             dsp += '<br><span class="label btn-label label-inverse" style="padding:1px 4px;">' + row.category_name + '</span>';                             
                         }
-                        // if(row.trans_sales_id != undefined){ 
-                        //     dsp += '<br><span class="label btn-label" style="padding:1px 4px;">' + row.trans_sales_name + '</span>';                             
-                        // }                        
+                        if(row.trans_note == undefined){
+                        }else{ 
+                            dsp += '<br><span class="label btn-label" style="padding:1px 4px;">' + row.trans_note + '</span>';                             
+                        }                        
                         return dsp;
                     }
                 }, {

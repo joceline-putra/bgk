@@ -216,6 +216,11 @@
                         dsp += '<a class="btn-contact-info" data-id="' + row.trans_contact_id + '" data-type="trans" data-trans-type="2" style="cursor:pointer;">';
                         dsp += '<span class="hide fas fa-user-tie"></span>&nbsp;' + row.contact_name;
                         dsp += '</a>';
+                        if(row.trans_note == undefined){ 
+
+                        }else{
+                            dsp += '<br><span class="label btn-label" style="padding:1px 4px;">' + row.trans_note + '</span>';                             
+                        }                                
                         return dsp;
                     }
                 }, {
