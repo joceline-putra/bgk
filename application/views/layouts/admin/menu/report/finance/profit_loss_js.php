@@ -134,8 +134,8 @@ $(document).ready(function() {
 			// {'data': 'movement_credit',className:'text-right'},
 			// {'data': 'end_debit',className:'text-right'},
 			// {'data': 'end_credit',className:'text-right'},
-			{'data': 'profit_loss_debit',className:'text-right'},
-			{'data': 'profit_loss_credit',className:'text-right'},
+			// {'data': 'profit_loss_debit',className:'text-right'},
+			// {'data': 'profit_loss_credit',className:'text-right'},
 			{'data': 'profit_loss_end',className:'text-right'}      
 			// {'data': 'balance_debit',className:'text-right'},
 			// {'data': 'balance_credit',className:'text-right'}                  
@@ -170,8 +170,8 @@ $(document).ready(function() {
 				// $('td:eq(4)', row).css('text-align','right');
 				// $('td:eq(5)', row).css('text-align','right');
 				// $('td:eq(6)', row).css('text-align','right');   
-				$('td:eq(2)', row).css('text-align','right');
-				$('td:eq(3)', row).css('text-align','right');
+				// $('td:eq(2)', row).css('text-align','right');
+				// $('td:eq(3)', row).css('text-align','right');
 				// $('td:eq(9)', row).css('text-align','right');
 				// $('td:eq(10)', row).css('text-align','right');                    
 				var account_name = '';
@@ -188,9 +188,9 @@ $(document).ready(function() {
 				// this.api().cell($('td:eq(4)', row)).data(addCommas(data.movement_credit));                 
 				// this.api().cell($('td:eq(5)', row)).data(addCommas(data.end_debit));            
 				// this.api().cell($('td:eq(6)', row)).data(addCommas(data.end_credit));                                                
-				this.api().cell($('td:eq(1)', row)).data(addCommas(data.profit_loss_debit));            
-				this.api().cell($('td:eq(2)', row)).data(addCommas(data.profit_loss_credit));            
-				this.api().cell($('td:eq(3)', row)).data(addCommas(data.profit_loss_end));                 
+				// this.api().cell($('td:eq(1)', row)).data(addCommas(data.profit_loss_debit));            
+				// this.api().cell($('td:eq(2)', row)).data(addCommas(data.profit_loss_credit));            
+				this.api().cell($('td:eq(1)', row)).data(addCommas(data.profit_loss_end));                 
 				// this.api().cell($('td:eq(9)', row)).data(addCommas(data.balance_debit));            
 				// this.api().cell($('td:eq(10)', row)).data(addCommas(data.balance_credit));            
 				}else{
@@ -216,14 +216,14 @@ $(document).ready(function() {
 
 				
 					var background_color = '#ecf0f2';
-					$('td:eq(0)', row).css('background-color',background_color);
-					$('td:eq(1)', row).css('background-color',background_color);
-					$('td:eq(2)', row).css('background-color',background_color);    
-					$('td:eq(3)', row).css('background-color',background_color);                        
+					// $('td:eq(0)', row).css('background-color',background_color);
+					// $('td:eq(1)', row).css('background-color',background_color);
+					// $('td:eq(2)', row).css('background-color',background_color);    
+					// $('td:eq(3)', row).css('background-color',background_color);                        
 				}
-				this.api().cell($('td:eq(1)', row)).data(total_profit_loss_debit);
-				this.api().cell($('td:eq(2)', row)).data(total_profit_loss_credit);
-				this.api().cell($('td:eq(3)', row)).data(total_profit_loss_end);                                
+				// this.api().cell($('td:eq(1)', row)).data(total_profit_loss_debit);
+				// this.api().cell($('td:eq(2)', row)).data(total_profit_loss_credit);
+				this.api().cell($('td:eq(1)', row)).data(total_profit_loss_end);                                
 				}
 						
 			}

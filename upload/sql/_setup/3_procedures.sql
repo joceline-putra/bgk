@@ -2175,6 +2175,397 @@ CREATE PROCEDURE `sp_report_finance`(IN vACTION INT(5),IN vSTART VARCHAR(255),IN
             END BLOCK_B;
 
             SELECT * FROM journals_temp;    
+        ELSEIF vACTION = 6 THEN /* Laba Rugi */
+            DROP TEMPORARY TABLE IF EXISTS journals_temp;
+            CREATE TEMPORARY TABLE journals_temp (
+                `temp_id` BIGINT NOT NULL AUTO_INCREMENT,           
+                `parent_id` BIGINT(50),
+                `account_id` BIGINT(50),
+                `account_group` INT(5),
+                `group_sub_id` INT(5),                
+                `group_sub` VARCHAR(255),           
+                `account_code` VARCHAR(255),
+                `account_name` VARCHAR(255),
+                `start_debit` DOUBLE(18,2) DEFAULT 0,
+                `start_credit` DOUBLE(18,2) DEFAULT 0,
+                    `movement_debit` DOUBLE(18,2) DEFAULT 0,
+                    `movement_credit` DOUBLE(18,2) DEFAULT 0,
+                `end_debit` DOUBLE(18,2) DEFAULT 0,
+                `end_credit` DOUBLE(18,2) DEFAULT 0,
+                    `profit_loss_debit` DOUBLE(18,2) DEFAULT 0,
+                    `profit_loss_credit` DOUBLE(18,2) DEFAULT 0,
+                    `profit_loss_end` DOUBLE(18,2) DEFAULT 0,
+                `balance_debit` DOUBLE(18,2) DEFAULT 0,
+                `balance_credit` DOUBLE(18,2) DEFAULT 0,
+                `balance_end` DOUBLE(18,2) DEFAULT 0,   
+                `start_date` VARCHAR(255),  
+                `running_date` VARCHAR(255),
+                `period_date` VARCHAR(255),                          
+                `status` INT(5) DEFAULT 0,
+                `message` VARCHAR(255),
+                `total_data` INT(50),
+                `search` VARCHAR(255),               
+                PRIMARY KEY (`temp_id`),
+                INDEX `ACCOUNT_ID`(`account_id`) USING BTREE
+            ) ENGINE=MEMORY;    
+            
+            SELECT MIN(journal_item_date) INTO mDATE_START_APP FROM journals_items WHERE journal_item_branch_id=vBRANCH_ID;
+
+            SET @run_date_start = DATE_FORMAT(CONCAT(vSTART,' 00:00:00'), "%Y%m%d%H%i%s"); -- 2023-02-09 00:00:00
+            SET @run_date_end   = DATE_FORMAT(CONCAT(vEND,' 23:59:59'), "%Y%m%d%H%i%s");   -- 2023-02-28 23:59:59
+            
+            SET @start_date     = mDATE_START_APP - INTERVAL 1 DAY;                        -- 2023-02-07 10:41:37
+            SET @start_date     = DATE_FORMAT(@start_date, "%Y%m%d%H%i%s");                -- 2023-02-07 10:41:37
+            -- SET @end_date       = DATE_FORMAT(CONCAT(vSTART,' 23:59:59'), "%Y%m%d%H%i%s"); -- 2023-02-09 23:59:59
+            SET @end_date       = DATE_FORMAT(CONCAT(vSTART,' 23:59:59'), "%Y%m%d%H%i%s") - INTERVAL 1 DAY; -- 2023-02-09 23:59:59            
+
+            BLOCK_A:BEGIN /* DONE Get Group of Account */
+                DECLARE mPARENT_ID BIGINT(50);
+                -- DECLARE mACCOUNT_ID BIGINT(50);
+                -- DECLARE mACCOUNT_CODE VARCHAR(255);
+                -- DECLARE mACCOUNT_GROUP INT(5);
+                DECLARE mACCOUNT_NAME VARCHAR(255);
+                -- DECLARE mACCOUNT_GROUP_SUB VARCHAR(255);
+
+                DECLARE mTOTAL_DATA INT(50) DEFAULT 0;
+                DECLARE mFINISHED INTEGER;
+                DECLARE mACTION_CURSOR CURSOR FOR
+                    SELECT 
+                    account_group AS group_id,
+                    CASE 
+                        WHEN account_group=1 THEN 'Aset'
+                        WHEN account_group=2 THEN 'Kewajiban'
+                        WHEN account_group=3 THEN 'Ekuitas'
+                        WHEN account_group=4 THEN 'Pendapatan'
+                        WHEN account_group=5 THEN 'Beban'
+                        ELSE 'Lainnya'
+                    END AS group_name
+                    FROM accounts 
+                    WHERE account_branch_id=vBRANCH_ID
+                    GROUP BY account_group;
+                DECLARE CONTINUE HANDLER FOR NOT FOUND SET mFINISHED = 1;           
+                
+                OPEN mACTION_CURSOR;
+                LOOP_1: LOOP
+                    FETCH mACTION_CURSOR INTO mPARENT_ID, mACCOUNT_NAME;                
+                    IF mFINISHED = 1 THEN
+                        LEAVE LOOP_1;
+                    END IF;       
+                    
+                    INSERT INTO journals_temp(`parent_id`,`account_group`,`account_name`)
+                    VALUES(mPARENT_ID,mPARENT_ID,mACCOUNT_NAME);
+                END LOOP LOOP_1;                    
+            END BLOCK_A;
+
+            BLOCK_B:BEGIN /* DONE Get Account From Group By Journal Found */
+                DECLARE mPARENT_ID BIGINT(50);
+                DECLARE mACCOUNT_ID BIGINT(50);
+                DECLARE mACCOUNT_CODE VARCHAR(255);
+                DECLARE mACCOUNT_GROUP INT(5);
+                DECLARE mACCOUNT_NAME VARCHAR(255);
+                DECLARE mGROUP_SUB_ID INT(255);
+                DECLARE mGROUP_SUB VARCHAR(255);
+                
+                DECLARE mSTART_DEBIT  DOUBLE(18,2) DEFAULT 0;
+                DECLARE mSTART_CREDIT DOUBLE(18,2) DEFAULT 0;
+                DECLARE mMOVEMENT_DEBIT DOUBLE(18,2) DEFAULT 0;
+                DECLARE mMOVEMENT_CREDIT DOUBLE(18,2) DEFAULT 0;
+                DECLARE mEND_DEBIT DOUBLE(18,2) DEFAULT 0;
+                DECLARE mEND_CREDIT DOUBLE(18,2) DEFAULT 0;
+                DECLARE mTOTAL_DATA INT(50) DEFAULT 0;
+                DECLARE mFINISHED INTEGER;
+                DECLARE mACTION_CURSOR CURSOR FOR
+                    SELECT accounts.account_group, account_group_sub, account_group_sub_name, accounts.`account_id`, accounts.account_code, accounts.account_name 
+                    FROM journals_items 
+                    LEFT JOIN accounts ON journal_item_account_id=account_id 
+                    WHERE journal_item_branch_id=vBRANCH_ID
+                    GROUP BY journal_item_account_id;
+                DECLARE CONTINUE HANDLER FOR NOT FOUND SET mFINISHED = 1;           
+                
+                OPEN mACTION_CURSOR;
+                LOOP_1: LOOP
+                    FETCH mACTION_CURSOR INTO mPARENT_ID, mGROUP_SUB_ID, mGROUP_SUB, mACCOUNT_ID, mACCOUNT_CODE, mACCOUNT_NAME;                
+                    IF mFINISHED = 1 THEN
+                        LEAVE LOOP_1;
+                    END IF;       
+                    
+                    INSERT INTO journals_temp(`parent_id`,`account_group`,`group_sub_id`,`group_sub`,`account_id`,`account_code`,`account_name`)
+                    VALUES(mPARENT_ID,mPARENT_ID,mGROUP_SUB_ID,mGROUP_SUB,mACCOUNT_ID,mACCOUNT_CODE,CONCAT('    ',mACCOUNT_NAME));
+                END LOOP LOOP_1;                                                        
+            END BLOCK_B;
+            
+            BLOCK_D:BEGIN /* DONE Update Movement Balance @running_date_start @running_date_end*/
+                DECLARE mPARENT_ID BIGINT(50);
+                DECLARE mACCOUNT_ID BIGINT(50);
+                DECLARE mACCOUNT_CODE VARCHAR(255);
+                DECLARE mACCOUNT_GROUP INT(5);
+                DECLARE mACCOUNT_NAME VARCHAR(255);
+                DECLARE mGROUP_SUB VARCHAR(255);
+                
+                DECLARE mSTART_DEBIT  DOUBLE(18,2) DEFAULT 0;
+                DECLARE mSTART_CREDIT DOUBLE(18,2) DEFAULT 0;
+                DECLARE mMOVEMENT_DEBIT DOUBLE(18,2) DEFAULT 0;
+                DECLARE mMOVEMENT_CREDIT DOUBLE(18,2) DEFAULT 0;
+                DECLARE mEND_DEBIT DOUBLE(18,2) DEFAULT 0;
+                DECLARE mEND_CREDIT DOUBLE(18,2) DEFAULT 0;
+                DECLARE mTOTAL_DATA INT(50) DEFAULT 0;
+                DECLARE mFINISHED INTEGER;
+                DECLARE mACTION_CURSOR CURSOR FOR
+                    SELECT journal_item_account_id, account_group, IFNULL(SUM(journal_item_debit),0) AS debit, IFNULL(SUM(journal_item_credit),0) AS credit
+                    FROM journals_items
+                    LEFT JOIN accounts ON journal_item_account_id=account_id
+                    WHERE `journal_item_branch_id` = vBRANCH_ID 
+                    AND `journal_item_date` > @run_date_start
+                    AND `journal_item_date` < @run_date_end
+                    AND `journal_item_flag`=1 
+                    GROUP BY journal_item_account_id;
+                DECLARE CONTINUE HANDLER FOR NOT FOUND SET mFINISHED = 1;           
+                
+                OPEN mACTION_CURSOR;
+                LOOP_1: LOOP
+                    FETCH mACTION_CURSOR INTO mACCOUNT_ID, mACCOUNT_GROUP, mSTART_DEBIT, mSTART_CREDIT;             
+                    IF mFINISHED = 1 THEN
+                        LEAVE LOOP_1;
+                    END IF;       
+                UPDATE journals_temp SET movement_debit=CASE 
+                        WHEN account_group = 1 THEN mSTART_DEBIT
+                        WHEN account_group = 2 THEN mSTART_DEBIT
+                        WHEN account_group = 3 THEN mSTART_DEBIT
+                        WHEN account_group = 4 THEN mSTART_DEBIT
+                        WHEN account_group = 5 THEN mSTART_DEBIT
+                        ELSE 0
+                    END, movement_credit=CASE 
+                        WHEN account_group = 1 THEN mSTART_CREDIT
+                        WHEN account_group = 2 THEN mSTART_CREDIT
+                        WHEN account_group = 3 THEN mSTART_CREDIT
+                        WHEN account_group = 4 THEN mSTART_CREDIT
+                        WHEN account_group = 5 THEN mSTART_CREDIT
+                        ELSE 0
+                    END
+                WHERE account_id=mACCOUNT_ID;    
+                END LOOP LOOP_1;                
+            END BLOCK_D;
+            
+            BLOCK_D1:BEGIN /* Update start_date, running_date */        
+                UPDATE journals_temp SET `start_date`=
+                CONCAT(
+                IFNULL(DATE_FORMAT(@start_date,"%Y-%m-%d %H:%i:%s"),' ?'),
+                ' <> ',
+                IFNULL(DATE_FORMAT(@end_date,"%Y-%m-%d %H:%i:%s"),' ?')),
+                `running_date`=CONCAT(
+                    IFNULL(DATE_FORMAT(@run_date_start,"%Y-%m-%d %H:%i:%s"),'?'),' <> ',IFNULL(DATE_FORMAT(@run_date_end,"%Y-%m-%d %H:%i:%s"),'?')
+                );  
+            END BLOCK_D1;
+            
+            BLOCK_D1:BEGIN /* Tricky for Profit Lost set debit and credit = 0 */        
+                -- UPDATE journals_temp SET `start_debit`='0.00', `start_credit`='0.00' WHERE account_group > 3;
+            END BLOCK_D1;
+
+            BLOCK_E:BEGIN /* DONE Update end_debit and end_credit  */
+                UPDATE journals_temp SET end_debit = CASE
+                    WHEN account_group = 1 THEN 
+                        CASE 
+                            WHEN (start_debit + movement_debit) > (start_credit + movement_credit) THEN
+                                (start_debit + movement_debit) - (start_credit + movement_credit)
+                            WHEN (start_debit + movement_debit) < (start_credit + movement_credit) THEN
+                                0
+                            ELSE 0
+                        END    
+                    WHEN account_group = 2 THEN 
+                        CASE 
+                            WHEN (start_debit + movement_debit) > (start_credit + movement_credit) THEN
+                                (start_debit + movement_debit) - (start_credit + movement_credit)
+                            WHEN (start_debit + movement_debit) < (start_credit + movement_credit) THEN
+                                0
+                            ELSE 0
+                        END                                        
+                    WHEN account_group = 3 THEN 
+                        CASE 
+                            WHEN (start_debit + movement_debit) > (start_credit + movement_credit) THEN
+                                (start_debit + movement_debit) - (start_credit + movement_credit)
+                            WHEN (start_debit + movement_debit) < (start_credit + movement_credit) THEN
+                                0
+                            ELSE 0
+                        END
+                    WHEN account_group = 4 THEN 
+                        CASE 
+                            WHEN (start_debit + movement_debit) > (start_credit + movement_credit) THEN
+                                (start_debit + movement_debit) - (start_credit + movement_credit)
+                            WHEN (start_debit + movement_debit) < (start_credit + movement_credit) THEN
+                                0
+                            ELSE 0
+                        END
+                    WHEN account_group = 5 THEN 
+                        CASE 
+                            WHEN (start_debit + movement_debit) > (start_credit + movement_credit) THEN
+                                (start_debit + movement_debit) - (start_credit + movement_credit)
+                            WHEN (start_debit + movement_debit) < (start_credit + movement_credit) THEN
+                                0
+                            ELSE 0
+                        END
+                END, end_credit = CASE
+                    WHEN account_group = 1 THEN 
+                        CASE 
+                            WHEN (start_credit + movement_credit) > (start_debit + movement_debit) THEN
+                                (start_credit + movement_credit) - (start_debit + movement_debit)
+                            WHEN (start_credit + movement_credit) < (start_debit + movement_debit) THEN
+                                0
+                            ELSE 0
+                        END                    
+                    WHEN account_group = 2 THEN 
+                        CASE 
+                            WHEN (start_credit + movement_credit) > (start_debit + movement_debit) THEN
+                                (start_credit + movement_credit) - (start_debit + movement_debit)
+                            WHEN (start_credit + movement_credit) < (start_debit + movement_debit) THEN
+                                0
+                            ELSE 0
+                        END
+                    WHEN account_group = 3 THEN 
+                        CASE 
+                            WHEN (start_credit + movement_credit) > (start_debit + movement_debit) THEN
+                                (start_credit + movement_credit) - (start_debit + movement_debit)
+                            WHEN (start_credit + movement_credit) < (start_debit + movement_debit) THEN
+                                0
+                            ELSE 0
+                        END
+                    WHEN account_group = 4 THEN 
+                        CASE 
+                            WHEN (start_credit + movement_credit) > (start_debit + movement_debit) THEN
+                                (start_credit + movement_credit) - (start_debit + movement_debit)
+                            WHEN (start_credit + movement_credit) < (start_debit + movement_debit) THEN
+                                0
+                            ELSE 0
+                        END
+                    WHEN account_group = 5 THEN 
+                        CASE 
+                            WHEN (start_credit + movement_credit) > (start_debit + movement_debit) THEN
+                                (start_credit + movement_credit) - (start_debit + movement_debit)
+                            WHEN (start_credit + movement_credit) < (start_debit + movement_debit) THEN
+                                0
+                            ELSE 0
+                        END
+                END;                      
+            END BLOCK_E;
+
+            BLOCK_F:BEGIN /* Update profit_loss_debit / profit_loss_credit */  
+                -- UPDATE journals_temp SET profit_loss_debit = (CASE
+                --     WHEN account_group = 4 THEN (CASE
+                --         WHEN (movement_debit) > (movement_credit) THEN
+                --             movement_credit - movement_debit
+                --         WHEN (movement_debit) < (movement_credit) THEN
+                --             0
+                --         ELSE 0 END
+                --     )
+                --     WHEN account_group = 5 THEN (CASE 
+                --         WHEN (movement_debit) > (movement_credit) THEN
+                --             movement_debit - movement_credit
+                --         WHEN (movement_debit) < (movement_credit) THEN
+                --             0
+                --         ELSE 0 END
+                --     )
+                --     ELSE 0 END                  
+                -- ), profit_loss_credit = (CASE
+                --     WHEN account_group = 4 THEN (CASE
+                --         WHEN (movement_credit) > (movement_debit) THEN
+                --             movement_credit - movement_debit
+                --         WHEN (movement_credit) < (movement_debit) THEN
+                --             0
+                --         ELSE 0 END                    
+                --     )
+                --     WHEN account_group = 5 THEN (CASE
+                --         WHEN (movement_credit) > (movement_debit) THEN
+                --             movement_debit - movement_credit
+                --         WHEN (movement_credit) < (movement_debit) THEN
+                --             0
+                --         ELSE 0 END                        
+                --     )
+                --     ELSE 0 END
+                -- );                 
+                UPDATE journals_temp SET profit_loss_debit = CASE
+                    WHEN (account_group = 4 ) OR (account_group = 5) THEN 
+                        end_debit         
+                    ELSE 0
+                END, profit_loss_credit = CASE
+                    WHEN (account_group = 4 ) OR (account_group = 5)  THEN 
+                        end_credit             
+                    ELSE 0
+                END;                                                               
+            END BLOCK_F;
+        
+            BLOCK_G:BEGIN /* Update balance_debit / balance_credit / balance_end */
+                UPDATE journals_temp SET balance_debit = CASE
+                    WHEN (account_group = 1 ) OR (account_group = 2) OR (account_group = 3) THEN 
+                        end_debit         
+                    ELSE 0
+                END, balance_credit = CASE
+                    WHEN (account_group = 1 ) OR (account_group = 2) OR (account_group = 3)  THEN 
+                        end_credit             
+                    ELSE 0
+                END;                                  
+            END BLOCK_G;
+        
+            BLOCK_H:BEGIN /* Update profit_loss_end End & balance_end */
+                -- UPDATE journals_temp SET profit_loss_end = (CASE
+                --     WHEN account_group = 4 THEN (profit_loss_debit - profit_loss_credit)
+                --     WHEN account_group = 5 THEN (profit_loss_debit - profit_loss_credit)
+                --     ELSE 0 END)
+                -- , balance_end = (CASE
+                --     WHEN account_group = 1 THEN (balance_debit - balance_credit)
+                --     WHEN account_group = 2 THEN (balance_credit - balance_debit)
+                --     WHEN account_group = 3 THEN (balance_credit - balance_debit) ELSE 0 END);
+                -- UPDATE journals_temp SET profit_loss_end = (CASE
+                --     WHEN account_group = 4 THEN (CASE 
+                --         WHEN profit_loss_credit > 0 THEN profit_loss_credit
+                --         WHEN profit_loss_debit < 0 THEN profit_loss_debit ELSE 0 END
+                --     )
+                --     WHEN account_group = 5 THEN (profit_loss_debit - profit_loss_credit)
+                --     ELSE 0 END);  
+                UPDATE journals_temp SET profit_loss_end = (CASE
+                    WHEN account_group = 4 THEN profit_loss_credit - profit_loss_debit
+                    WHEN account_group = 5 THEN profit_loss_debit - profit_loss_credit ELSE 0 END
+                );
+                UPDATE journals_temp SET balance_end = (CASE
+                    WHEN account_group = 1 THEN (balance_debit - balance_credit)
+                    WHEN account_group = 2 THEN (balance_credit - balance_debit)
+                    WHEN account_group = 3 THEN (balance_credit - balance_debit) ELSE 0 END
+                );
+            END BLOCK_H;
+            
+            BLOCK_I:BEGIN /* Insert SUM of Journal Temp */
+                DECLARE mTOTAL_DATA BIGINT(255);
+
+                INSERT INTO journals_temp (`parent_id`,`account_name`,`start_debit`,`start_credit`,`movement_debit`,`movement_credit`,`end_debit`,`end_credit`,`profit_loss_debit`,`profit_loss_credit`,`profit_loss_end`,`balance_debit`,`balance_credit`,`balance_end`)
+                SELECT CONCAT(6), CONCAT('Total'), IFNULL(SUM(`start_debit`),0), IFNULL(SUM(`start_credit`),0), 
+                IFNULL(SUM(`movement_debit`),0), IFNULL(SUM(`movement_credit`),0), 
+                IFNULL(SUM(`end_debit`),0), IFNULL(SUM(`end_credit`),0),
+                IFNULL(SUM(`profit_loss_debit`),0), IFNULL(SUM(`profit_loss_credit`),0), IFNULL(SUM(`profit_loss_end`),0),
+                IFNULL(SUM(`balance_debit`),0), IFNULL(SUM(`balance_credit`),0), IFNULL(SUM(`balance_end`),0)           
+                FROM journals_temp;
+                            
+                SELECT IFNULL(COUNT(*),0) INTO mTOTAL_DATA FROM journals_temp;
+                UPDATE journals_temp 
+                SET total_data=mTOTAL_DATA, 
+                `status`=CASE WHEN mTOTAL_DATA > 0 THEN 1 ELSE 0 END, 
+                `message`=CASE WHEN mTOTAL_DATA > 0 THEN 'Data found' ELSE 'Data not found' END,
+                `search`=CASE WHEN vSEARCH != '' THEN vSEARCH ELSE '-' END;
+            END BLOCK_I;
+            
+            BLOCK_J:BEGIN /* Updaet Row Total for Profit Loss End & Balance */
+                UPDATE journals_temp SET profit_loss_end=profit_loss_credit - profit_loss_debit
+                WHERE account_name='Total' AND parent_id=6;
+            END BLOCK_J;
+
+            BLOCK_K:BEGIN /* Updaet Row Total for Profit Loss End & Balance */
+                UPDATE journals_temp SET `status`=0
+                WHERE profit_loss_end = '0.00' AND group_sub_id > 0;
+            END BLOCK_K;            
+
+            -- SELECT account_name, end_debit, end_credit, profit_loss_debit, profit_loss_credit, profit_loss_end FROM journals_temp WHERE account_group > 3 ORDER BY parent_id ASC, account_code ASC;
+            
+            SELECT journals_temp.* FROM journals_temp WHERE `status` = 1 ORDER BY parent_id ASC, account_code ASC;
+            -- SELECT account_name, start_debit, start_credit, movement_debit, movement_credit, end_debit, end_credit, profit_loss_debit, profit_loss_credit, profit_loss_end, `start_date`, `running_date` FROM journals_temp WHERE account_group > 3 ORDER BY parent_id ASC, account_code ASC;
+            -- SELECT account_name, start_debit, start_credit, movement_debit, movement_credit, end_debit, end_credit FROM journals_temp WHERE account_group > 3 ORDER BY parent_id ASC, account_code ASC;                        
+            -- SELECT start_debit, start_credit, movement_debit, movement_credit, end_debit, end_credit, start_date, running_date FROM journals_temp ORDER BY parent_id ASC, account_code ASC;                  
         ELSE
             SELECT 0 AS `status`, CONCAT('Action not found') AS `message`;
         END IF;

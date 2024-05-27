@@ -494,7 +494,7 @@ class Report extends MY_Controller{
                     
                     $total_data = 0;
                     $mdatas = array();
-                    $get_datas = $this->report_finance(3,$date_start,$date_end,$session_branch_id,$account_id,$search);
+                    $get_datas = $this->report_finance(6,$date_start,$date_end,$session_branch_id,$account_id,$search);
                     // log_message('debug',$get_datas);die;
                     // var_dump($date_start,$date_end,$session_branch_id,$account_id,$search);
                     foreach($get_datas as $k => $v):
@@ -2680,7 +2680,7 @@ class Report extends MY_Controller{
 
         $total_data = 0;
         $mdatas = array();
-        $get_datas = $this->report_finance(3,$date_start,$date_end,$session_branch_id,$account_id,$search);
+        $get_datas = $this->report_finance(6,$date_start,$date_end,$session_branch_id,$account_id,$search);
         // log_message('debug',$get_datas);die;
         foreach($get_datas as $k => $v):
             if(intval($v['total_data']) > 0){

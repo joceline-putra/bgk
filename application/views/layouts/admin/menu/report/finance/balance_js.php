@@ -149,8 +149,9 @@
 			// {'data': 'end_credit',className:'text-right'},
 			// {'data': 'profit_loss_debit',className:'text-right'},
 			// {'data': 'profit_loss_credit',className:'text-right'}
-			{'data': 'balance_debit',className:'text-right'},
-			{'data': 'balance_credit',className:'text-right'}                  
+			// {'data': 'balance_debit',className:'text-right'},
+			// {'data': 'balance_credit',className:'text-right'},
+			{'data': 'balance_end',className:'text-right'} 			                  
 		],   
 		stripeClasses: [], 
 		createdRow: function(row, data, dataIndex){
@@ -202,65 +203,70 @@
 				// this.api().cell($('td:eq(6)', row)).data(addCommas(data.end_credit));                                                
 				// this.api().cell($('td:eq(7)', row)).data(addCommas(data.profit_loss_debit));            
 				// this.api().cell($('td:eq(8)', row)).data(addCommas(data.profit_loss_credit));                 
-				this.api().cell($('td:eq(1)', row)).data(addCommas(data.balance_debit));            
-				this.api().cell($('td:eq(2)', row)).data(addCommas(data.balance_credit));            
+				// this.api().cell($('td:eq(1)', row)).data(addCommas(data.balance_debit));            
+				// this.api().cell($('td:eq(2)', row)).data(addCommas(data.balance_credit));  
+				this.api().cell($('td:eq(1)', row)).data(addCommas(data.balance_end));  				          
 				}else{
-				// var account_name = '<b>'+data.account_name+'</b>';          
-				// this.api().cell($('td:eq(0)', row)).data(account_name);
-				var account_name = '<b>'+data.account_name+'</b>';          
-				this.api().cell($('td:eq(0)', row)).data(account_name);
-				
-				// $('td:eq(0)', row).attr('colspan', 5);                 
-				// console.log(account_name);
-				var total_start_debit = '';
-				var total_start_credit = '';
-				var total_movement_debit = '';
-				var total_movement_credit = '';
-				var total_end_debit = '';
-				var total_end_credit = '';             
-				var total_profit_loss_debit = '';
-				var total_profit_loss_credit = '';
-				var total_balance_loss_debit = '';
-				var total_balance_loss_credit = '';                                        
+					// var account_name = '<b>'+data.account_name+'</b>';          
+					// this.api().cell($('td:eq(0)', row)).data(account_name);
+					var account_name = '<b>'+data.account_name+'</b>';          
+					this.api().cell($('td:eq(0)', row)).data(account_name);
+					
+					// $('td:eq(0)', row).attr('colspan', 5);                 
+					// console.log(account_name);
+					var total_start_debit = '';
+					var total_start_credit = '';
+					var total_movement_debit = '';
+					var total_movement_credit = '';
+					var total_end_debit = '';
+					var total_end_credit = '';             
+					var total_profit_loss_debit = '';
+					var total_profit_loss_credit = '';
+					var total_balance_loss_debit = '';
+					var total_balance_loss_credit = '';  
+					var total_balance_loss_end = '';  				                                      
 
-				if(account_name == '<b>Total</b>'){
-					var total_start_debit = '<b>'+addCommas(data.start_debit)+'</b>';
-					var total_start_credit = '<b>'+addCommas(data.start_credit)+'</b>';
-					var total_movement_debit = '<b>'+addCommas(data.movement_debit)+'</b>';
-					var total_movement_credit = '<b>'+addCommas(data.movement_credit)+'</b>';            
-					var total_end_debit = '<b>'+addCommas(data.end_debit)+'</b>';
-					var total_end_credit = '<b>'+addCommas(data.end_credit)+'</b>';
-					var total_profit_loss_debit = '<b>'+addCommas(data.profit_loss_debit)+'</b>';
-					var total_profit_loss_credit = '<b>'+addCommas(data.profit_loss_credit)+'</b>';
-					var total_balance_debit = '<b>'+addCommas(data.balance_debit)+'</b>';
-					var total_balance_credit = '<b>'+addCommas(data.balance_credit)+'</b>';
+					if(account_name == '<b>Total</b>'){
+						var total_start_debit = '<b>'+addCommas(data.start_debit)+'</b>';
+						var total_start_credit = '<b>'+addCommas(data.start_credit)+'</b>';
+						var total_movement_debit = '<b>'+addCommas(data.movement_debit)+'</b>';
+						var total_movement_credit = '<b>'+addCommas(data.movement_credit)+'</b>';            
+						var total_end_debit = '<b>'+addCommas(data.end_debit)+'</b>';
+						var total_end_credit = '<b>'+addCommas(data.end_credit)+'</b>';
+						var total_profit_loss_debit = '<b>'+addCommas(data.profit_loss_debit)+'</b>';
+						var total_profit_loss_credit = '<b>'+addCommas(data.profit_loss_credit)+'</b>';
+						var total_balance_debit = '<b>'+addCommas(data.balance_debit)+'</b>';
+						var total_balance_credit = '<b>'+addCommas(data.balance_credit)+'</b>';
+						var total_balance_end = '<b>'+addCommas(data.balance_end)+'</b>';					
 
-					var background_color = '#ecf0f2';
-					$('td:eq(0)', row).css('background-color',background_color);
-					// $('td:eq(1)', row).css('background-color',background_color);
-					// $('td:eq(2)', row).css('background-color',background_color);
-					// $('td:eq(3)', row).css('background-color',background_color);
-					// $('td:eq(4)', row).css('background-color',background_color);
-					// $('td:eq(5)', row).css('background-color',background_color);
-					// $('td:eq(6)', row).css('background-color',background_color);
-					// $('td:eq(7)', row).css('background-color',background_color);
-					// $('td:eq(8)', row).css('background-color',background_color);
-					$('td:eq(1)', row).css('background-color',background_color);
-					$('td:eq(2)', row).css('background-color',background_color);                                                                        
-				}
-					// this.api().cell($('td:eq(1)', row)).data(total_start_debit);            
-					// this.api().cell($('td:eq(2)', row)).data(total_start_credit);          
-				// $('td:eq(0)', row).attr('colspan', 5);                 
-				// this.api().cell($('td:eq(1)', row)).data('');            
-				// this.api().cell($('td:eq(2)', row)).data('');                                                
-				// this.api().cell($('td:eq(3)', row)).data(total_movement_debit);            
-				// this.api().cell($('td:eq(4)', row)).data(total_movement_credit);                 
-				// this.api().cell($('td:eq(5)', row)).data(total_end_debit);            
-				// this.api().cell($('td:eq(6)', row)).data(total_end_credit);                                   
-				// this.api().cell($('td:eq(7)', row)).data(total_profit_loss_debit);            
-				// this.api().cell($('td:eq(8)', row)).data(total_profit_loss_credit);                 
-				this.api().cell($('td:eq(1)', row)).data(total_balance_debit);            
-				this.api().cell($('td:eq(2)', row)).data(total_balance_credit)                            
+						var background_color = '#ecf0f2';
+						$('td:eq(0)', row).css('background-color',background_color);
+						// $('td:eq(1)', row).css('background-color',background_color);
+						// $('td:eq(2)', row).css('background-color',background_color);
+						// $('td:eq(3)', row).css('background-color',background_color);
+						// $('td:eq(4)', row).css('background-color',background_color);
+						// $('td:eq(5)', row).css('background-color',background_color);
+						// $('td:eq(6)', row).css('background-color',background_color);
+						// $('td:eq(7)', row).css('background-color',background_color);
+						// $('td:eq(8)', row).css('background-color',background_color);
+						// $('td:eq(1)', row).css('background-color',background_color);
+						// $('td:eq(2)', row).css('background-color',background_color);   
+						$('td:eq(1)', row).css('background-color',background_color);   					                                                                     
+					}
+						// this.api().cell($('td:eq(1)', row)).data(total_start_debit);            
+						// this.api().cell($('td:eq(2)', row)).data(total_start_credit);          
+					// $('td:eq(0)', row).attr('colspan', 5);                 
+					// this.api().cell($('td:eq(1)', row)).data('');            
+					// this.api().cell($('td:eq(2)', row)).data('');                                                
+					// this.api().cell($('td:eq(3)', row)).data(total_movement_debit);            
+					// this.api().cell($('td:eq(4)', row)).data(total_movement_credit);                 
+					// this.api().cell($('td:eq(5)', row)).data(total_end_debit);            
+					// this.api().cell($('td:eq(6)', row)).data(total_end_credit);                                   
+					// this.api().cell($('td:eq(7)', row)).data(total_profit_loss_debit);            
+					// this.api().cell($('td:eq(8)', row)).data(total_profit_loss_credit);                 
+					// this.api().cell($('td:eq(1)', row)).data(total_balance_debit);            
+					// this.api().cell($('td:eq(2)', row)).data(total_balance_credit);
+					this.api().cell($('td:eq(1)', row)).data(total_balance_end);				                            
 				}
 						
 			}

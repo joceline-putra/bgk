@@ -132,7 +132,7 @@
                                                 <!-- <th colspan="2" class="text-center">Saldo Awal</th> -->
                                                 <!-- <th colspan="2" class="text-center">Penyesuaian</th> -->
                                                 <!-- <th colspan="2" class="text-center">Saldo Akhir</th> -->
-                                                <th colspan="3" class="text-center">Laba Rugi</th>
+                                                <!-- <th colspan="3" class="text-center">Laba Rugi</th> -->
                                                 <!-- <th colspan="2" class="text-center">Neraca</th>                         -->
                                             </tr>
                                             <tr>
@@ -142,8 +142,8 @@
                                                 <!-- <th class="text-center">Kredit</th> -->
                                                 <!-- <th class="text-center">Debit</th> -->
                                                 <!-- <th class="text-center">Kredit</th> -->
-                                                <th class="text-center">Debit</th>
-                                                <th class="text-center">Kredit</th>
+                                                <!-- <th class="text-center">Debit</th> -->
+                                                <!-- <th class="text-center">Kredit</th> -->
                                                 <th class="text-right">Saldo</th>
                                                 <!-- <th class="text-center">Debit</th> -->
                                                 <!-- <th class="text-center">Kredit</th>                                                 -->
